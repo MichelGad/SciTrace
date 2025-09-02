@@ -246,6 +246,10 @@ def open_folder():
 @login_required
 def setup_demo():
     """Set up demo project and dataflow."""
+    # Check if user is admin
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Access denied. Admin role required.'}), 403
+    
     try:
         # Import the demo setup function
         import subprocess

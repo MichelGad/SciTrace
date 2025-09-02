@@ -19,6 +19,21 @@
         </div>
     </div>
 
+    <!-- Admin Demo Indicator -->
+    {% if user.role == 'admin' %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="fas fa-rocket me-2"></i>
+                <div>
+                    <strong>Demo Environment Available!</strong> 
+                    <span class="ms-2">You have access to demo data and sample workflows. Use the demo tile to explore sample research projects.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Statistics Cards with Quick Actions -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
@@ -105,6 +120,7 @@
             </div>
         </div>
         
+        {% if user.role == 'admin' %}
         <div class="col-md-3 mb-3">
             <div class="card h-100 bg-warning bg-opacity-10 border-0 shadow-sm stats-card">
                 <div class="card-body">
@@ -130,6 +146,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 
 
@@ -146,11 +163,22 @@
                     <a href="{{ url_for('tasks.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="card-body">
+                    {% if user.role == 'admin' %}
+                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Sample demo tasks are available. Tasks marked with a yellow 'Demo' badge show example workflows.</small>
+                    </div>
+                    {% endif %}
                     {% if tasks %}
                         {% for task in tasks[:5] %}
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
-                                <h6 class="mb-1">{{ task.title }}</h6>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <h6 class="mb-1">{{ task.title }}</h6>
+                                    {% if task.project.name == "DOM ENV Model" and user.role == 'admin' %}
+                                    <span class="badge bg-warning">Demo</span>
+                                    {% endif %}
+                                </div>
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <small class="text-muted">{{ task.project.name }}</small>
                                     <span class="badge badge-{{ task.priority }}">
@@ -182,6 +210,51 @@
         </div>
     </div>
 
+    <!-- Recent Projects -->
+    {% if projects %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Projects</h5>
+                    <a href="{{ url_for('projects.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if user.role == 'admin' %}
+                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Demo data is available for exploration. Look for projects marked with a yellow 'Demo' badge.</small>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        {% for project in projects[:3] %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">{{ project.name }}</h6>
+                                        {% if project.name == "DOM ENV Model" and user.role == 'admin' %}
+                                        <span class="badge bg-warning">Demo</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="card-text text-muted small">{{ project.description[:80] }}{% if project.description|length > 80 %}...{% endif %}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Admin: {{ project.admin.name }}</small>
+                                        <a href="{{ url_for('projects.view', project_id=project.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Recent Dataflows -->
     {% if dataflows %}
     <div class="row">
@@ -192,12 +265,23 @@
                     <a href="{{ url_for('dataflow.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="card-body">
+                    {% if user.role == 'admin' %}
+                    <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Demo dataflows are available for exploration. Look for dataflows marked with a yellow 'Demo' badge.</small>
+                    </div>
+                    {% endif %}
                     <div class="row">
                         {% for dataflow in dataflows[:3] %}
                         <div class="col-md-4 mb-3">
                             <div class="card border">
                                 <div class="card-body">
-                                    <h6 class="card-title">{{ dataflow.name }}</h6>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">{{ dataflow.name }}</h6>
+                                        {% if dataflow.name == "DOM ENV Model Workflow" and user.role == 'admin' %}
+                                        <span class="badge bg-warning">Demo</span>
+                                        {% endif %}
+                                    </div>
                                     <p class="card-text text-muted small">{{ dataflow.description[:80] }}{% if dataflow.description|length > 80 %}...{% endif %}</p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted">{{ dataflow.project.name }}</small>
