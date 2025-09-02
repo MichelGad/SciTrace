@@ -187,6 +187,233 @@
             transform: translateY(-1px);
         }
         
+        .hover-lift {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .hover-lift:hover .card {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .stats-card .text-success {
+            color: var(--success-color) !important;
+        }
+        
+        .stats-card .text-warning {
+            color: var(--warning-color) !important;
+        }
+        
+        .stats-card .text-info {
+            color: var(--info-color) !important;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-success {
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning {
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning:hover {
+            background-color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info {
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-info {
+            color: white !important;
+        }
+        
+        .btn-info:hover {
+            color: white !important;
+        }
+        
+        .btn-warning {
+            color: white !important;
+        }
+        
+        .btn-warning:hover {
+            color: white !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        /* Fix all button visibility issues across the web app */
+        .btn-outline-success {
+            color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning {
+            color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+        }
+        
+        .btn-outline-warning:hover {
+            background-color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info {
+            color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+        }
+        
+        .btn-outline-secondary {
+            color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-danger {
+            color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+            color: white !important;
+        }
+        
+        /* Ensure all solid buttons have white text */
+        .btn-primary, .btn-success, .btn-warning, .btn-info, .btn-secondary, .btn-danger {
+            color: white !important;
+        }
+        
+        .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-info:hover, .btn-secondary:hover, .btn-danger:hover {
+            color: white !important;
+        }
+        
+        /* Fix badge visibility issues */
+        .badge {
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .badge.badge-pending, .badge.badge-ongoing, .badge.badge-done {
+            color: white !important;
+        }
+        
+        .badge.badge-low, .badge.badge-medium, .badge.badge-urgent {
+            color: white !important;
+        }
+        
+        /* Ensure proper badge background colors */
+        .badge.badge-pending {
+            background-color: var(--secondary-color) !important;
+        }
+        
+        .badge.badge-ongoing {
+            background-color: var(--warning-color) !important;
+        }
+        
+        .badge.badge-done {
+            background-color: var(--success-color) !important;
+        }
+        
+        .badge.badge-low {
+            background-color: var(--success-color) !important;
+        }
+        
+        .badge.badge-medium {
+            background-color: var(--warning-color) !important;
+        }
+        
+        .badge.badge-urgent {
+            background-color: var(--danger-color) !important;
+        }
+        
+        .stats-card .btn {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .stats-card .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
         .card-header {
             background-color: var(--white);
             border-bottom: 1px solid var(--gray-200);
