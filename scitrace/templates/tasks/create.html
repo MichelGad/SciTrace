@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Create Task - SciTrace{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <i class="fas fa-plus-circle text-primary fs-1"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-2">Create New Task</h1>
+                <p class="text-muted mb-0">Add a new task to your research project</p>
+            </div>
+        </div>
+                <div>
+                    <a href="{{ url_for('tasks.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Tasks
+                    </a>
+                </div>
+            </div>
+
+            <!-- Create Task Form -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Task Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Task Title *</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                    <div class="form-text">Give your task a clear, descriptive title.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                                    <div class="form-text">Provide details about what needs to be done.</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="project_id" class="form-label">Project *</label>
+                                        <select class="form-control" id="project_id" name="project_id" required>
+                                            <option value="">Select a project</option>
+                                            {% for project in projects %}
+                                            <option value="{{ project.id }}">{{ project.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="form-text">Choose which project this task belongs to.</div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="priority" class="form-label">Priority</label>
+                                        <select class="form-control" id="priority" name="priority">
+                                            <option value="low">Low</option>
+                                            <option value="medium" selected>Medium</option>
+                                            <option value="urgent">Urgent</option>
+                                        </select>
+                                        <div class="form-text">Set the priority level for this task.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="deadline" class="form-label">Deadline</label>
+                                    <input type="datetime-local" class="form-control" id="deadline" name="deadline">
+                                    <div class="form-text">Set a deadline for this task (optional).</div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Create Task
+                                    </button>
+                                    <a href="{{ url_for('tasks.index') }}" class="btn btn-outline-secondary">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Task Guidelines</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Writing Good Task Titles</h6>
+                                <ul class="small text-muted">
+                                    <li>Be specific and descriptive</li>
+                                    <li>Use action verbs</li>
+                                    <li>Keep it concise but clear</li>
+                                    <li>Include the main objective</li>
+                                </ul>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Priority Levels</h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-danger me-2">Urgent</span>
+                                    <small class="text-muted">Must be completed immediately</small>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-warning me-2">Medium</span>
+                                    <small class="text-muted">Important but not time-critical</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-secondary me-2">Low</span>
+                                    <small class="text-muted">Can be done when time permits</small>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold">Task Management Tips</h6>
+                                <ul class="small text-muted">
+                                    <li>Break large tasks into smaller ones</li>
+                                    <li>Set realistic deadlines</li>
+                                    <li>Update task status regularly</li>
+                                    <li>Add detailed descriptions for complex tasks</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if not projects %}
+                    <div class="card mt-3">
+                        <div class="card-body text-center">
+                            <i class="fas fa-folder fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">No Projects Available</h6>
+                            <p class="text-muted small mb-3">You need to create a project first before adding tasks.</p>
+                            <a href="{{ url_for('projects.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Create Project
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

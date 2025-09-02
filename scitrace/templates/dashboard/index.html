@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SciTrace{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-chart-line text-primary fs-1"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-1">Welcome back, {{ user.name }}!</h2>
+                    <p class="text-muted mb-0">Here's an overview of your research projects and activities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 bg-primary bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-primary bg-opacity-20 p-2 rounded me-3">
+                                    <i class="fas fa-folder text-white fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">{{ stats.total_projects }}</h3>
+                                    <p class="text-muted mb-0 small">Total Projects</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 bg-success bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-success bg-opacity-20 p-2 rounded me-3">
+                                    <i class="fas fa-tasks text-white fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">{{ stats.total_tasks }}</h3>
+                                    <p class="text-muted mb-0 small">Total Tasks</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 bg-warning bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-warning bg-opacity-20 p-2 rounded me-3">
+                                    <i class="fas fa-exclamation-triangle text-white fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">{{ stats.urgent_tasks }}</h3>
+                                    <p class="text-muted mb-0 small">Urgent Tasks</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 bg-info bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-info bg-opacity-20 p-2 rounded me-3">
+                                    <i class="fas fa-share-alt text-white fs-4"></i>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-0">{{ stats.total_dataflows }}</h3>
+                                    <p class="text-muted mb-0 small">Dataflows</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('projects.create') }}" class="card text-decoration-none h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                                        <i class="fas fa-folder-plus text-primary fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Create Project</h6>
+                                    <p class="text-muted small mb-0">Start a new research project</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('dataflow.create') }}" class="card text-decoration-none h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-info bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                                        <i class="fas fa-project-diagram text-info fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Create Dataflow</h6>
+                                    <p class="text-muted small mb-0">Visualize your research workflow</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('tasks.create') }}" class="card text-decoration-none h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-secondary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                                        <i class="fas fa-tasks text-secondary fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Create Task</h6>
+                                    <p class="text-muted small mb-0">Add a new research task</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="#" onclick="loadDemoProject(); return false;" class="card text-decoration-none h-100">
+                                <div class="card-body text-center p-4">
+                                    <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                                        <i class="fas fa-play text-success fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-2">Load Demo</h6>
+                                    <p class="text-muted small mb-0">Explore sample research data</p>
+                                </div>
+                            </a>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        <!-- Recent Tasks -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Tasks</h5>
+                    <a href="{{ url_for('tasks.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if tasks %}
+                        {% for task in tasks[:5] %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="mb-1">{{ task.title }}</h6>
+                                <small class="text-muted">{{ task.project.name }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-{{ 'success' if task.status == 'done' else 'warning' if task.status == 'ongoing' else 'secondary' }}">
+                                    {{ task.status.title() }}
+                                </span>
+                                <br>
+                                <small class="text-muted">{{ task.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                        </div>
+                        {% if not loop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-tasks fa-2x text-muted mb-3"></i>
+                            <p class="text-muted mb-3">No tasks yet</p>
+                            <a href="{{ url_for('projects.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create a Project First
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Dataflows -->
+    {% if dataflows %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Dataflows</h5>
+                    <a href="{{ url_for('dataflow.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for dataflow in dataflows[:3] %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ dataflow.name }}</h6>
+                                    <p class="card-text text-muted small">{{ dataflow.description[:80] }}{% if dataflow.description|length > 80 %}...{% endif %}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ dataflow.project.name }}</small>
+                                        <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+</div>
+
+<script>
+function loadDemoProject() {
+    if (confirm('This will set up a demo project with the DOM ENV Model dataflow. Continue?')) {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading Demo...';
+        button.disabled = true;
+        
+        // Make AJAX call to setup demo
+        fetch('/api/setup-demo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Demo project loaded successfully! Redirecting to dataflow...');
+                window.location.href = '/dataflow';
+            } else {
+                alert('Error loading demo: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading demo project');
+        })
+        .finally(() => {
+            // Restore button state
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    }
+}
+</script>
+{% endblock %}
