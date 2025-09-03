@@ -256,13 +256,6 @@ SciTrace/
 - **Dynamic File Content Serving**: Real-time file access and download
 - **Metadata Exploration**: Comprehensive file information display
 
-### ➕ Adding New Features
-1. Add new routes in the appropriate blueprint
-2. Define new database models in `models.py`
-3. Add business logic in the appropriate service file (`datalad_services.py` or `project_services.py`)
-4. Create HTML templates in the appropriate directory
-5. Add CSS/JS files to the static directory
-
 ## 🗺️ Roadmap
 
 ### Version 2.0 - Interactive Research Platform (Coming Soon)
