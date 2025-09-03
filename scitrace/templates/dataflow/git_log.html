@@ -12,6 +12,17 @@
         font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     }
     
+    /* Git Icon Styling */
+    .fas.fa-git-alt {
+        color: #f05032 !important; /* Official Git orange color */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    .git-log-header .fas.fa-git-alt {
+        font-size: 1.2em;
+        vertical-align: middle;
+    }
+    
     .git-log-header {
         background: #007acc;
         color: white;
@@ -36,66 +47,174 @@
         border-radius: 4px;
         font-size: 12px;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
     
-    .commit-timeline {
+    .latest-commit-info {
+        text-align: right;
+    }
+    
+    .latest-commit-message {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .latest-commit-meta {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+    
+    .stats-bar {
+        background: #2d2d2d;
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .stats-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+    
+    .stats-item i {
+        color: #007acc;
+        font-size: 16px;
+    }
+    
+    /* Tree Structure Visualization */
+    .git-tree-container {
         position: relative;
-        padding-left: 20px;
+        padding-left: 40px;
+        min-height: 400px;
     }
     
-    .commit-timeline::before {
-        content: '';
+    .git-tree-line {
         position: absolute;
-        left: 15px;
+        left: 20px;
         top: 0;
         bottom: 0;
         width: 2px;
-        background: #007acc;
-        opacity: 0.3;
+        background: linear-gradient(to bottom, #007acc, #4CAF50, #ff8c00);
+        opacity: 0.6;
     }
     
-    .commit-entry {
+    .commit-row {
         position: relative;
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #2d2d2d;
-        border-radius: 6px;
-        border-left: 4px solid #007acc;
-        transition: all 0.2s ease;
-        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        min-height: 60px;
     }
     
-    .commit-entry:hover {
-        background: #3d3d3d;
-        transform: translateX(5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    
-    .commit-entry.expanded {
-        background: #3d3d3d;
-        border-left-color: #4CAF50;
-    }
-    
-    .commit-entry::before {
-        content: '';
+    .tree-connections {
         position: absolute;
-        left: -22px;
-        top: 25px;
+        left: -40px;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tree-line {
+        position: absolute;
+        background: #007acc;
+        opacity: 0.8;
+    }
+    
+    .tree-line.vertical {
+        width: 2px;
+        height: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .tree-line.horizontal {
+        height: 2px;
+        width: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .tree-line.merge-right {
+        height: 2px;
+        width: 20px;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        background: #4CAF50;
+    }
+    
+    .tree-line.merge-left {
+        height: 2px;
+        width: 20px;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        background: #ff8c00;
+    }
+    
+    .commit-node {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         width: 12px;
         height: 12px;
         background: #ff8c00;
         border-radius: 50%;
         border: 3px solid #1e1e1e;
+        z-index: 2;
     }
     
-    .commit-entry:first-child::before {
+    .commit-node.main-branch {
         background: #007acc;
         border-color: #007acc;
     }
     
-    .commit-entry.expanded::before {
+    .commit-node.merge {
         background: #4CAF50;
         border-color: #4CAF50;
+    }
+    
+    .commit-node.latest {
+        background: #007acc;
+        border-color: #007acc;
+        box-shadow: 0 0 10px rgba(0, 122, 204, 0.5);
+    }
+    
+    .commit-content {
+        flex: 1;
+        margin-left: 20px;
+        background: #2d2d2d;
+        border-radius: 6px;
+        padding: 15px;
+        border-left: 4px solid #007acc;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .commit-content:hover {
+        background: #3d3d3d;
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .commit-content.expanded {
+        background: #3d3d3d;
+        border-left-color: #4CAF50;
     }
     
     .commit-header {
@@ -111,55 +230,53 @@
         color: #ffffff;
         margin: 0;
         flex: 1;
-        margin-right: 20px;
+        margin-right: 15px;
     }
     
     .commit-meta {
-        text-align: right;
-        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+        min-width: 120px;
     }
     
     .commit-author {
-        font-size: 14px;
-        color: #cccccc;
-        margin-bottom: 5px;
+        font-size: 12px;
+        color: #007acc;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
     
     .commit-hash {
+        font-size: 11px;
+        color: #888;
         font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-        font-size: 12px;
-        color: #888888;
         background: #1e1e1e;
         padding: 2px 6px;
         border-radius: 3px;
-        margin-bottom: 5px;
     }
     
     .commit-date {
-        font-size: 12px;
-        color: #666666;
+        font-size: 11px;
+        color: #666;
     }
     
     .commit-body {
-        color: #aaaaaa;
         font-size: 13px;
-        line-height: 1.4;
+        color: #ccc;
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid #444444;
-    }
-    
-    .commit-body:empty {
-        display: none;
+        border-top: 1px solid #444;
     }
     
     .commit-details {
         display: none;
         margin-top: 15px;
-        padding: 15px;
-        background: #1e1e1e;
-        border-radius: 4px;
-        border-left: 3px solid #4CAF50;
+        padding-top: 15px;
+        border-top: 1px solid #444;
     }
     
     .commit-details.show {
@@ -167,187 +284,35 @@
     }
     
     .commit-details h6 {
-        color: #4CAF50;
+        color: #007acc;
         margin-bottom: 10px;
         font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
     
-    .commit-details p {
-        margin: 5px 0;
-        font-size: 13px;
-        color: #cccccc;
+    .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+        font-size: 12px;
     }
     
-    .commit-details .detail-label {
-        color: #888888;
-        font-weight: 500;
+    .detail-label {
+        color: #888;
+        min-width: 80px;
+        margin-right: 10px;
     }
     
-    .commit-details .detail-value {
-        color: #ffffff;
+    .detail-value {
+        color: #ccc;
         font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-        background: #2d2d2d;
-        padding: 2px 6px;
-        border-radius: 3px;
-        margin-left: 10px;
     }
     
     .commit-actions {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #444444;
-    }
-    
-    .commit-actions .btn {
-        font-size: 11px;
-        padding: 4px 8px;
-        margin-right: 8px;
-        margin-bottom: 5px;
-    }
-    
-    .stats-bar {
-        background: #007acc;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 6px;
-        margin-bottom: 20px;
+        margin-top: 15px;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 14px;
-    }
-    
-    .stats-item {
-        display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
     }
     
-    .stats-item i {
-        opacity: 0.8;
-    }
-    
-    .load-more-btn {
-        background: #007acc;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s ease;
-    }
-    
-    .load-more-btn:hover {
-        background: #005a9e;
-    }
-    
-    .load-more-btn:disabled {
-        background: #666666;
-        cursor: not-allowed;
-    }
-    
-    .loading-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #ffffff;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 1s ease-in-out infinite;
-        margin-right: 8px;
-    }
-    
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-    
-    .error-message {
-        background: #d32f2f;
-        color: white;
-        padding: 15px;
-        border-radius: 4px;
-        margin: 20px 0;
-    }
-    
-    .no-commits {
-        text-align: center;
-        padding: 40px;
-        color: #888888;
-    }
-    
-    .no-commits i {
-        font-size: 48px;
-        margin-bottom: 20px;
-        opacity: 0.5;
-    }
-    
-    /* Toast Notifications */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
-    
-    .toast {
-        min-width: 300px;
-        margin-bottom: 10px;
-    }
-    
-    /* Enhanced Dropdown Styling */
-    .dropdown-menu {
-        min-width: 250px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border: 1px solid #dee2e6;
-    }
-    
-    .dropdown-item {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .dropdown-item.text-danger:hover {
-        background-color: #f8d7da;
-    }
-    
-    .dropdown-item i {
-        width: 16px;
-        text-align: center;
-    }
-    
-    .dropdown-divider {
-        margin: 8px 0;
-        border-color: #e9ecef;
-    }
-    
-    /* More Button Styling */
-    .commit-actions .dropdown-toggle {
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        border-color: #6c757d;
-        color: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .commit-actions .dropdown-toggle:hover {
-        background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
-        border-color: #5a6268;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    
-    .commit-actions .dropdown-toggle:focus {
-        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
-    }
-    
-    /* Action Button Enhancements */
     .commit-actions .btn {
         margin-right: 5px;
         margin-bottom: 5px;
@@ -358,29 +323,153 @@
         margin-bottom: 5px;
     }
     
-    /* Diff Modal Styling */
-    .language-diff {
-        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-        font-size: 12px;
-        line-height: 1.4;
+    /* Action Button Styling */
+    .commit-actions .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+        transition: all 0.2s ease;
     }
     
-    /* Loading States */
-    .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+    .commit-actions .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     
-    /* Success/Error States */
-    .btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
+    .commit-actions .btn:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0,0,0,0.25);
+    }
+    
+    /* Branch Indicators */
+    .branch-indicator {
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #4CAF50;
         color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 3;
     }
     
-    .btn-success:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
+    .branch-indicator.main {
+        background: #007acc;
+    }
+    
+    .branch-indicator.feature {
+        background: #ff8c00;
+    }
+    
+    .branch-indicator.hotfix {
+        background: #dc3545;
+    }
+    
+    /* Loading and Empty States */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #007acc;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 10px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .no-commits {
+        text-align: center;
+        padding: 40px 20px;
+        color: #888;
+    }
+    
+    .no-commits i {
+        font-size: 48px;
+        color: #007acc;
+        margin-bottom: 20px;
+    }
+    
+    .load-more-btn {
+        background: linear-gradient(135deg, #007acc 0%, #005a9e 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 20px auto;
+        display: block;
+    }
+    
+    .load-more-btn:hover {
+        background: linear-gradient(135deg, #005a9e 0%, #004080 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 122, 204, 0.3);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .git-log-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .latest-commit-info {
+            text-align: center;
+        }
+        
+        .stats-bar {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .commit-header {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .commit-meta {
+            align-items: flex-start;
+        }
+        
+        .git-tree-container {
+            padding-left: 20px;
+        }
+        
+        .tree-connections {
+            left: -20px;
+            width: 20px;
+        }
+    }
+
+    .btn-outline-warning[href*="git_log"]:focus {
+        box-shadow: 0 0 0 0.2rem rgba(240, 80, 50, 0.25);
+    }
+    
+    /* Git Log Button Styling */
+    .btn-outline-warning[href*="git_log"] {
+        border-color: #f05032 !important;
+        color: #f05032 !important;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-warning[href*="git_log"]:hover {
+        background-color: #f05032 !important;
+        border-color: #f05032 !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(240, 80, 50, 0.3);
+    }
+    
+    .btn-outline-warning[href*="git_log"]:focus {
+        box-shadow: 0 0 0 0.2rem rgba(240, 80, 50, 0.25);
     }
 </style>
 {% endblock %}
@@ -389,48 +478,40 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <!-- Git Log Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="fas fa-git-alt text-primary fs-1"></i>
-                    </div>
-                    <div>
-                        <h1 class="h3 mb-2">Git Log</h1>
-                        <p class="text-muted mb-0">{{ dataflow.name }} - {{ dataflow.project.name }}</p>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary">
-                        <i class="fas fa-share-alt me-2"></i>View Dataflow
-                    </a>
-                    <a href="{{ url_for('dataflow.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Dataflows
-                    </a>
-                </div>
-            </div>
-
-            <!-- Git Log Container -->
             <div class="git-log-container">
-                <div class="git-log-header">
-                    <div class="branch-info">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <i class="fas fa-code-branch me-2"></i>
-                        <span class="branch-badge">main</span>
-                    </div>
-                    <div class="commit-info">
-                        <span id="latest-commit-message">Loading...</span>
-                        <span id="latest-commit-author"></span>
-                        <span id="latest-commit-hash"></span>
-                        <span id="latest-commit-date"></span>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2><img src="https://api.iconify.design/devicon/git.svg" alt="Git" style="width: 28px; height: 28px; margin-right: 12px; vertical-align: middle; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">Git Log: {{ dataflow.name }}</h2>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Dataflow
+                        </a>
+                        <a href="{{ url_for('dataflow.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>All Dataflows
+                        </a>
                     </div>
                 </div>
                 
-                <!-- Stats Bar -->
+                <div class="git-log-header">
+                    <div class="branch-info">
+                        <div class="branch-badge" id="branch-badge">
+                            <i class="fas fa-code-branch"></i>
+                            <span id="current-branch">main</span>
+                        </div>
+                    </div>
+                    <div class="latest-commit-info">
+                        <div class="latest-commit-message" id="latest-commit-message">Loading...</div>
+                        <div class="latest-commit-meta">
+                            <span id="latest-commit-author">-</span> • 
+                            <span id="latest-commit-hash">-</span> • 
+                            <span id="latest-commit-date">-</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="stats-bar" id="stats-bar" style="display: none;">
                     <div class="stats-item">
                         <i class="fas fa-code-branch"></i>
-                        <span>Branch: <strong>main</strong></span>
+                        <span>Branch: <strong id="branch-name">main</strong></span>
                     </div>
                     <div class="stats-item">
                         <i class="fas fa-history"></i>
@@ -440,12 +521,17 @@
                         <i class="fas fa-user"></i>
                         <span>Author: <strong id="main-author">-</strong></span>
                     </div>
+                    <div class="stats-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Tree Depth: <strong id="tree-depth">0</strong></span>
+                    </div>
                 </div>
                 
-                <div class="commit-timeline" id="commit-timeline">
+                <div class="git-tree-container" id="git-tree-container">
+                    <div class="git-tree-line"></div>
                     <div class="text-center p-4">
                         <div class="loading-spinner"></div>
-                        <span>Loading commit history...</span>
+                        <span>Loading commit tree...</span>
                     </div>
                 </div>
                 
@@ -472,10 +558,16 @@ function loadCommits(append = false) {
     if (isLoading) return;
     
     isLoading = true;
-    const container = document.getElementById('commit-timeline');
+    const container = document.getElementById('git-tree-container');
     
     if (!append) {
-        container.innerHTML = '<div class="text-center p-4"><div class="loading-spinner"></div><span>Loading commit history...</span></div>';
+        container.innerHTML = `
+            <div class="git-tree-line"></div>
+            <div class="text-center p-4">
+                <div class="loading-spinner"></div>
+                <span>Loading commit tree...</span>
+            </div>
+        `;
     }
     
     fetch(`/api/dataflows/{{ dataflow.id }}/git-log?limit=${currentLimit}`)
@@ -517,10 +609,11 @@ function loadCommits(append = false) {
 }
 
 function displayCommits(commits) {
-    const container = document.getElementById('commit-timeline');
+    const container = document.getElementById('git-tree-container');
     
     if (commits.length === 0) {
         container.innerHTML = `
+            <div class="git-tree-line"></div>
             <div class="no-commits">
                 <i class="fas fa-git-alt"></i>
                 <h4>No Commits Found</h4>
@@ -542,7 +635,7 @@ function displayCommits(commits) {
 }
 
 function appendCommits(commits) {
-    const container = document.getElementById('commit-timeline');
+    const container = document.getElementById('git-tree-container');
     let html = '';
     
     commits.forEach(commit => {
@@ -559,50 +652,60 @@ function createCommitHTML(commit, isLatest) {
     const bodyHtml = commit.body ? `<div class="commit-body">${commit.body}</div>` : '';
     
     return `
-        <div class="commit-entry ${isLatest ? 'latest-commit' : ''}" data-commit-hash="${commit.short_hash}">
-            <div class="commit-header">
-                <h3 class="commit-message">${commit.message}</h3>
-                <div class="commit-meta">
-                    <div class="commit-author">${commit.author_name}</div>
-                    <div class="commit-hash">${commit.short_hash}</div>
-                    <div class="commit-date">${commit.relative_date}</div>
-                </div>
+        <div class="commit-row" data-commit-hash="${commit.short_hash}">
+            <div class="tree-connections">
+                ${commit.parent_hash ? `
+                    <div class="tree-line horizontal"></div>
+                    <div class="tree-line vertical"></div>
+                ` : ''}
+                ${commit.merge_commit ? `
+                    <div class="tree-line merge-left"></div>
+                    <div class="tree-line vertical"></div>
+                ` : ''}
+                ${commit.merge_commit ? `
+                    <div class="tree-line merge-right"></div>
+                ` : ''}
             </div>
-            ${bodyHtml}
-            <div class="commit-details" id="details-${commit.short_hash}">
-                <h6>Commit Details</h6>
-                <p><span class="detail-label">Full Hash:</span><span class="detail-value">${commit.full_hash}</span></p>
-                <p><span class="detail-label">Author:</span><span class="detail-value">${commit.author_name}</span></p>
-                <p><span class="detail-label">Email:</span><span class="detail-value">${commit.author_email}</span></p>
-                <p><span class="detail-label">Date:</span><span class="detail-value">${commit.date}</span></p>
-                <p><span class="detail-label">Relative:</span><span class="detail-value">${commit.relative_date}</span></p>
-                ${commit.body ? `<p><span class="detail-label">Body:</span><span class="detail-value">${commit.body}</span></p>` : ''}
-                <div class="commit-actions">
-                    <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard('${commit.short_hash}')">
-                        <i class="fas fa-copy me-1"></i>Copy Hash
-                    </button>
-                    <button class="btn btn-outline-info btn-sm" onclick="viewCommitFiles('${commit.short_hash}')">
-                        <i class="fas fa-files-o me-1"></i>View Files
-                    </button>
-                    <div class="dropdown d-inline-block">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-ellipsis-h me-1"></i>More
+            <div class="commit-node ${isLatest ? 'latest' : ''} ${commit.merge_commit ? 'merge' : ''} ${commit.main_branch ? 'main-branch' : ''}"></div>
+            <div class="commit-content ${isLatest ? 'expanded' : ''}">
+                <div class="commit-header">
+                    <h3 class="commit-message">${commit.message}</h3>
+                    <div class="commit-meta">
+                        <div class="commit-author">
+                            <i class="fas fa-user me-1"></i>${commit.author_name}
+                        </div>
+                        <div class="commit-hash">${commit.short_hash}</div>
+                        <div class="commit-date">${commit.relative_date}</div>
+                    </div>
+                </div>
+                ${bodyHtml}
+                <div class="commit-details" id="details-${commit.short_hash}">
+                    <h6>Commit Details</h6>
+                    <div class="detail-row"><span class="detail-label">Full Hash:</span><span class="detail-value">${commit.full_hash}</span></div>
+                    <div class="detail-row"><span class="detail-label">Author:</span><span class="detail-value">${commit.author_name}</span></div>
+                    <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">${commit.author_email}</span></div>
+                    <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${commit.date}</span></div>
+                    <div class="detail-row"><span class="detail-label">Relative:</span><span class="detail-value">${commit.relative_date}</span></div>
+                    ${commit.body ? `<div class="detail-row"><span class="detail-label">Body:</span><span class="detail-value">${commit.body}</span></div>` : ''}
+                    <div class="commit-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard('${commit.short_hash}')">
+                            <i class="fas fa-copy me-1"></i>Copy Hash
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="compareToLocal('${commit.short_hash}')">
-                                <i class="fas fa-exchange-alt me-2"></i>Compare to Local Changes
-                            </a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showNewBranchDialog('${commit.short_hash}')">
-                                <i class="fas fa-code-branch me-2"></i>New Branch...
-                            </a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showCheckoutDialog('${commit.short_hash}')">
-                                <i class="fas fa-checkout me-2"></i>Checkout Commit...
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="showRevertDialog('${commit.short_hash}')">
-                                <i class="fas fa-undo me-2"></i>Revert Commit...
-                            </a></li>
-                        </ul>
+                        <button class="btn btn-outline-info btn-sm" onclick="viewCommitFiles('${commit.short_hash}')">
+                            <i class="fas fa-files-o me-1"></i>View Files
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="compareToLocal('${commit.short_hash}')" title="Compare to Local Changes">
+                            <i class="fas fa-exchange-alt me-1"></i>Compare
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="showNewBranchDialog('${commit.short_hash}')" title="Create New Branch">
+                            <i class="fas fa-code-branch me-1"></i>Branch
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="showCheckoutDialog('${commit.short_hash}')" title="Checkout Commit">
+                            <i class="fas fa-checkout me-1"></i>Checkout
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="showRevertDialog('${commit.short_hash}')" title="Revert Commit">
+                            <i class="fas fa-undo me-1"></i>Revert
+                        </button>
                     </div>
                 </div>
             </div>
@@ -611,9 +714,9 @@ function createCommitHTML(commit, isLatest) {
 }
 
 function addCommitClickListeners() {
-    const commitEntries = document.querySelectorAll('.commit-entry');
-    commitEntries.forEach(entry => {
-        entry.addEventListener('click', function(e) {
+    const commitRows = document.querySelectorAll('.commit-row');
+    commitRows.forEach(row => {
+        row.addEventListener('click', function(e) {
             // Don't expand if clicking on buttons
             if (e.target.tagName === 'BUTTON' || e.target.closest('.commit-actions')) {
                 return;
@@ -628,7 +731,7 @@ function addCommitClickListeners() {
                 details.classList.remove('show');
             } else {
                 // Close other expanded commits
-                document.querySelectorAll('.commit-entry.expanded').forEach(expanded => {
+                document.querySelectorAll('.commit-row.expanded').forEach(expanded => {
                     expanded.classList.remove('expanded');
                     const expandedDetails = expanded.querySelector('.commit-details');
                     if (expandedDetails) expandedDetails.classList.remove('show');
@@ -653,6 +756,8 @@ function updateStats(commits) {
     const statsBar = document.getElementById('stats-bar');
     const totalCommits = document.getElementById('total-commits');
     const mainAuthor = document.getElementById('main-author');
+    const branchName = document.getElementById('branch-name');
+    const treeDepth = document.getElementById('tree-depth');
     
     totalCommits.textContent = commits.length;
     
@@ -666,6 +771,19 @@ function updateStats(commits) {
         authorCounts[a] > authorCounts[b] ? a : b
     );
     mainAuthor.textContent = mainAuthorName;
+    
+    // Determine tree depth
+    let maxDepth = 0;
+    commits.forEach(commit => {
+        let currentDepth = 0;
+        let current = commit;
+        while (current.parent_hash) {
+            current = commits.find(c => c.short_hash === current.parent_hash);
+            currentDepth++;
+        }
+        maxDepth = Math.max(maxDepth, currentDepth);
+    });
+    treeDepth.textContent = maxDepth + 1; // +1 for the latest commit itself
     
     statsBar.style.display = 'flex';
 }
@@ -931,8 +1049,9 @@ function escapeHtml(text) {
 }
 
 function showError(message) {
-    const container = document.getElementById('commit-timeline');
+    const container = document.getElementById('git-tree-container');
     container.innerHTML = `
+        <div class="git-tree-line"></div>
         <div class="error-message">
             <i class="fas fa-exclamation-triangle me-2"></i>
             ${message}
@@ -1123,9 +1242,13 @@ function updateCurrentBranch() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const branchBadge = document.querySelector('.branch-badge');
+                const branchBadge = document.getElementById('branch-badge');
                 if (branchBadge) {
-                    branchBadge.textContent = data.current_branch;
+                    branchBadge.querySelector('span').textContent = data.current_branch;
+                    branchBadge.classList.remove('main', 'feature', 'hotfix');
+                    if (data.current_branch.includes('main')) branchBadge.classList.add('main');
+                    else if (data.current_branch.includes('feature')) branchBadge.classList.add('feature');
+                    else if (data.current_branch.includes('hotfix')) branchBadge.classList.add('hotfix');
                 }
             }
         })

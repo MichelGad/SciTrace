@@ -120,13 +120,13 @@ This creates a demo DataLad dataset with sample research files in your home dire
 4. View commit metadata including author, date, hash, and message
 5. Copy commit hashes and explore commit details
 6. Load more commits with pagination support
-7. Click "View Files" to see exactly what files were modified in each commit
-8. View the actual content of files at specific commits
-9. See summary of added, modified, and deleted files per commit
-10. Use the **More** button dropdown for:
+7. See summary of added, modified, and deleted files per commit
+8. Use the individual action buttons for:
+    - **View Files**: Click to see exactly what files were modified in each commit
+    - **View File Content**: View the actual content of files at specific commits
     - **Compare to Local Changes**: See differences between commit and current state
     - **New Branch**: Create a new branch from any commit
-    - **Checkout Commit**: Switch to a specific commit (detached HEAD)
+    - **Checkout Commit**: Switch to a specific commit
     - **Revert Commit**: Undo changes by creating a revert commit
 
 ### 📎 Adding and Managing Files

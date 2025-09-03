@@ -1260,3 +1260,33 @@ def get_current_branch(dataflow_id):
         
     except Exception as e:
         return jsonify({'error': f'Failed to get current branch: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-tree', methods=['GET'])
+@login_required
+def get_git_tree(dataflow_id):
+    """Get git log with tree structure and branch information."""
+    try:
+        # Get the dataflow
+        dataflow = Dataflow.query.get_or_404(dataflow_id)
+        
+        # Check if user has access to this dataflow
+        if not current_user.has_access_to_dataflow(dataflow):
+            return jsonify({'success': False, 'error': 'Access denied'}), 403
+        
+        # Get the dataset path
+        dataset_path = dataflow.dataset_path
+        if not dataset_path or not os.path.exists(dataset_path):
+            return jsonify({'success': False, 'error': 'Dataset path not found'}), 404
+        
+        # Get limit parameter
+        limit = request.args.get('limit', 50, type=int)
+        limit = min(limit, 100)  # Cap at 100 commits
+        
+        # Get git tree structure
+        project_service = ProjectService()
+        result = project_service.get_git_tree_structure(dataset_path, limit)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
