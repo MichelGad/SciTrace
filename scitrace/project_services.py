@@ -503,3 +503,456 @@ class ProjectService:
                 'error': str(e),
                 'dataset_path': dataset_path
             }
+
+    def get_detailed_git_log(self, dataset_path, limit=50):
+        """Get detailed git log information for comprehensive visualization."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get detailed git log with author, date, and commit info
+            cmd = [
+                'git', 'log', 
+                '--pretty=format:%H|%h|%an|%ae|%ad|%s|%b',
+                '--date=iso',
+                '-n', str(limit)
+            ]
+            
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            commits = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    # Split by | delimiter
+                    parts = line.split('|')
+                    if len(parts) >= 6:
+                        full_hash = parts[0]
+                        short_hash = parts[1]
+                        author_name = parts[2]
+                        author_email = parts[3]
+                        date = parts[4]
+                        message = parts[5]
+                        body = parts[6] if len(parts) > 6 else ""
+                        
+                        # Parse date
+                        try:
+                            from datetime import datetime
+                            parsed_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
+                            formatted_date = parsed_date.strftime('%d. %b %Y at %H:%M')
+                            relative_date = self._get_relative_date(parsed_date)
+                        except:
+                            formatted_date = date
+                            relative_date = "Unknown"
+                        
+                        commits.append({
+                            'full_hash': full_hash,
+                            'short_hash': short_hash,
+                            'author_name': author_name,
+                            'author_email': author_email,
+                            'date': date,
+                            'formatted_date': formatted_date,
+                            'relative_date': relative_date,
+                            'message': message,
+                            'body': body
+                        })
+            
+            return commits
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get detailed git log: {e.stderr}")
+    
+    def _get_relative_date(self, date_str):
+        """Get relative date string (e.g., '2 hours ago', 'yesterday')."""
+        from datetime import datetime, timezone
+        import re
+        
+        try:
+            # Parse the date string into a datetime object
+            # Git log --date=iso format: 2025-09-03 16:23:11 +0200
+            # Remove timezone offset and parse
+            date_str_clean = re.sub(r'\s*[+-]\d{4}$', '', date_str)
+            date_obj = datetime.fromisoformat(date_str_clean)
+            
+            now = datetime.now(timezone.utc)
+            # Make date_obj timezone-aware if it isn't already
+            if date_obj.tzinfo is None:
+                date_obj = date_obj.replace(tzinfo=timezone.utc)
+            
+            diff = now - date_obj
+            
+            if diff.days == 0:
+                if diff.seconds < 3600:
+                    minutes = diff.seconds // 60
+                    return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+                else:
+                    hours = diff.seconds // 3600
+                    return f"{hours} hour{'s' if hours != 1 else ''} ago"
+            elif diff.days == 1:
+                return "Yesterday"
+            elif diff.days < 7:
+                return f"{diff.days} days ago"
+            elif diff.days < 30:
+                weeks = diff.days // 7
+                return f"{weeks} week{'s' if weeks != 1 else ''} ago"
+            elif diff.days < 365:
+                months = diff.days // 30
+                return f"{months} month{'s' if months != 1 else ''} ago"
+            else:
+                years = diff.days // 365
+                return f"{years} year{'s' if years != 1 else ''} ago"
+                
+        except Exception as e:
+            # If date parsing fails, return the original date string
+            return date_str
+
+    def get_file_diff(self, dataset_path, commit_hash, file_path):
+        """Get the diff for a specific file in a commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get the diff for the file
+            cmd = ['git', 'show', commit_hash, '--', file_path]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return result.stdout
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get file diff: {e.stderr}")
+    
+    def get_commit_files(self, dataset_path, commit_hash):
+        """Get files changed in a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get files changed in the commit
+            cmd = ['git', 'show', '--name-status', '--pretty=format:', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            files = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    parts = line.split('\t')
+                    if len(parts) == 2:
+                        status = parts[0]
+                        file_path = parts[1]
+                        
+                        # Determine change type
+                        if status == 'A':
+                            change_type = 'Added'
+                        elif status == 'M':
+                            change_type = 'Modified'
+                        elif status == 'D':
+                            change_type = 'Deleted'
+                        elif status == 'R':
+                            change_type = 'Renamed'
+                        else:
+                            change_type = status
+                        
+                        # Get file size if file exists
+                        file_size = None
+                        if status != 'D':  # Not deleted
+                            full_path = os.path.join(dataset_path, file_path)
+                            if os.path.exists(full_path):
+                                file_size = os.path.getsize(full_path)
+                        
+                        files.append({
+                            'path': file_path,
+                            'status': status,
+                            'change_type': change_type,
+                            'size': file_size
+                        })
+            
+            return files
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get commit files: {e.stderr}")
+    
+    def get_file_content_at_commit(self, dataset_path, commit_hash, file_path):
+        """Get file content at a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get file content at the specific commit
+            cmd = ['git', 'show', f'{commit_hash}:{file_path}']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return result.stdout
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get file content: {e.stderr}")
+    
+    def revert_commit(self, dataset_path, commit_hash, commit_message=None):
+        """Revert a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Create revert commit
+            cmd = ['git', 'revert', '--no-edit', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            # If custom message provided, amend the revert commit
+            if commit_message:
+                subprocess.run(['git', 'commit', '--amend', '-m', commit_message], 
+                             cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully reverted commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to revert commit: {e.stderr}")
+    
+    def create_branch_from_commit(self, dataset_path, commit_hash, branch_name):
+        """Create a new branch from a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Create and checkout new branch
+            cmd = ['git', 'checkout', '-b', branch_name, commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully created branch {branch_name} from commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to create branch: {e.stderr}")
+    
+    def checkout_commit(self, dataset_path, commit_hash):
+        """Checkout a specific commit (detached HEAD state)."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Checkout the commit
+            cmd = ['git', 'checkout', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully checked out commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to checkout commit: {e.stderr}")
+    
+    def compare_commit_to_local(self, dataset_path, commit_hash):
+        """Compare a commit to the current local state."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get diff between commit and current state
+            cmd = ['git', 'diff', commit_hash, 'HEAD']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'diff': result.stdout,
+                'has_changes': bool(result.stdout.strip())
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to compare commit: {e.stderr}")
+    
+    def get_current_branch(self, dataset_path):
+        """Get the current branch name."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            cmd = ['git', 'branch', '--show-current']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            # If no branch (detached HEAD), return the commit hash
+            try:
+                cmd = ['git', 'rev-parse', 'HEAD']
+                result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+                return f"HEAD ({result.stdout.strip()[:8]})"
+            except subprocess.CalledProcessError:
+                return "Unknown"
+
+    def get_git_tree_structure(self, dataset_path, limit=50):
+        """Get Git log with graph structure for tree visualization."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get git log with graph information
+            cmd = [
+                'git', 'log', '--graph', 
+                '--pretty=format:%H|%h|%an|%ae|%ad|%s|%b|%D|%p',
+                '--date=iso', '--decorate', '--all', '--topo-order',
+                f'--max-count={limit}'
+            ]
+            
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            if not result.stdout.strip():
+                return {
+                    'success': True,
+                    'commits': [],
+                    'current_branch': self.get_current_branch(dataset_path)
+                }
+            
+            commits = []
+            lines = result.stdout.strip().split('\n')
+            
+            for line in lines:
+                try:
+                    # Parse the line
+                    parts = line.split('|')
+                    if len(parts) < 9:
+                        continue
+                    
+                    # Extract graph characters (everything before the first pipe)
+                    graph_part = line[:line.find('|')]
+                    graph_chars = self._parse_graph_line(graph_part)
+                    
+                    # Extract commit data
+                    full_hash = parts[0]
+                    short_hash = parts[1]
+                    author_name = parts[2]
+                    author_email = parts[3]
+                    date_str = parts[4]
+                    message = parts[5]
+                    body = parts[6] if len(parts) > 6 else ""
+                    refs_str = parts[7] if len(parts) > 7 else ""
+                    parent_hashes = parts[8].split() if len(parts) > 8 else []
+                    
+                    # Parse refs to get branch information
+                    refs = self._parse_refs(refs_str)
+                    
+                    # Create commit object
+                    commit = {
+                        'full_hash': full_hash,
+                        'short_hash': short_hash,
+                        'author_name': author_name,
+                        'author_email': author_email,
+                        'date': date_str,
+                        'relative_date': self._get_relative_date(date_str),
+                        'message': message,
+                        'body': body,
+                        'parent_hash': parent_hashes[0] if parent_hashes else None,
+                        'parent_hashes': parent_hashes,
+                        'refs': refs,
+                        'graph_chars': graph_chars,
+                        'merge_commit': len(parent_hashes) > 1,
+                        'main_branch': refs.get('current_branch') == 'main' if refs else False,
+                        'branch_type': self._determine_branch_type(refs.get('current_branch') if refs else None)
+                    }
+                    
+                    commits.append(commit)
+                    
+                except Exception as e:
+                    # Skip malformed lines but continue processing
+                    print(f"Warning: Failed to parse commit line: {e}")
+                    continue
+            
+            return {
+                'success': True,
+                'commits': commits,
+                'current_branch': self.get_current_branch(dataset_path)
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get git tree structure: {e.stderr}")
+        except Exception as e:
+            raise Exception(f"Failed to get git tree structure: {str(e)}")
+
+    def _parse_graph_line(self, graph_line):
+        """Parse graph characters from git log --graph output."""
+        if not graph_line:
+            return []
+        
+        # Extract graph characters (remove spaces and other formatting)
+        chars = []
+        for char in graph_line:
+            if char in ['*', '|', '\\', '/', '+', '-', '_']:
+                chars.append(char)
+            elif char.isspace():
+                chars.append(' ')  # Preserve spacing for visualization
+            else:
+                chars.append(' ')  # Replace other characters with spaces
+        
+        return chars
+
+    def _parse_refs(self, refs_str):
+        """Parse Git refs string to extract branch and tag information."""
+        if not refs_str or not isinstance(refs_str, str):
+            return {}
+        
+        refs = {}
+        
+        try:
+            # Split refs by comma and process each one
+            ref_parts = refs_str.split(',')
+            
+            for ref in ref_parts:
+                ref = ref.strip()
+                if not ref:
+                    continue
+                
+                # Check for HEAD
+                if ref == 'HEAD':
+                    refs['head'] = True
+                # Check for current branch
+                elif ref.startswith('HEAD -> '):
+                    branch_name = ref.replace('HEAD -> ', '').strip()
+                    refs['current_branch'] = branch_name
+                # Check for tags
+                elif ref.startswith('tag: '):
+                    tag_name = ref.replace('tag: ', '').strip()
+                    if 'tags' not in refs:
+                        refs['tags'] = []
+                    refs['tags'].append(tag_name)
+                # Check for remote branches
+                elif ref.startswith('origin/'):
+                    branch_name = ref.replace('origin/', '').strip()
+                    if 'remote_branches' not in refs:
+                        refs['remote_branches'] = []
+                    refs['remote_branches'].append(branch_name)
+                # Check for local branches
+                elif not ref.startswith('(') and not ref.startswith(')'):
+                    # This is likely a local branch
+                    if 'local_branches' not in refs:
+                        refs['local_branches'] = []
+                    refs['local_branches'].append(ref)
+                    
+        except Exception as e:
+            print(f"Warning: Failed to parse refs '{refs_str}': {e}")
+        
+        return refs
+
+    def _determine_branch_type(self, branch_name):
+        """Determine the type of branch based on its name."""
+        if not branch_name:
+            return 'unknown'
+        
+        branch_lower = branch_name.lower()
+        
+        if 'main' in branch_lower or 'master' in branch_lower:
+            return 'main'
+        elif 'feature' in branch_lower:
+            return 'feature'
+        elif 'hotfix' in branch_lower:
+            return 'hotfix'
+        elif 'bugfix' in branch_lower:
+            return 'bugfix'
+        elif 'release' in branch_lower:
+            return 'release'
+        elif 'develop' in branch_lower or 'dev' in branch_lower:
+            return 'develop'
+        else:
+            return 'feature'  # Default to feature for unknown branches

@@ -56,6 +56,9 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2">
+                    <a href="{{ url_for('dataflow.git_log', dataflow_id=dataflow.id) }}" class="btn btn-outline-warning" style="border-color: #f05032; color: #f05032;">
+                        <img src="https://api.iconify.design/devicon/git.svg" alt="Git" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;">Git Log
+                    </a>
                     <a href="{{ url_for('dataflow.edit', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary">
                         <i class="fas fa-edit me-2"></i>Edit Dataflow
                     </a>

@@ -118,6 +118,21 @@ def view(dataflow_id):
                          dataflow=dataflow,
                          user=current_user)
 
+@bp.route('/<int:dataflow_id>/git-log')
+@login_required
+def git_log(dataflow_id):
+    """View git log for a specific dataflow's dataset."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        flash('Access denied', 'error')
+        return redirect(url_for('dataflow.index'))
+    
+    return render_template('dataflow/git_log.html',
+                         dataflow=dataflow,
+                         user=current_user)
+
 @bp.route('/<int:dataflow_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit(dataflow_id):
