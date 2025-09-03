@@ -16,7 +16,7 @@ A modern web-based platform for managing research data workflows with DataLad in
 - **Data Validation**: Basic file format validation and comprehensive metadata management
 - **Direct DataLad Access**: Execute DataLad commands through the web interface
 - **Commit History Management**: View and manage file commit history through the web interface
-- **Git Log Visualization**: Interactive git log view with timeline visualization, commit details, and statistics
+- **Git Log Visualization**: Interactive git log view with unified single-tab interface, real file diff support, and tree visualization
 - **Real-time Updates**: Dataflow visualization automatically reflects all DataLad changes in real-time
 
 ### 👥 Project & Task Management
@@ -32,6 +32,16 @@ A modern web-based platform for managing research data workflows with DataLad in
 - **Demo Environment**: Quick setup with sample research data for testing and exploration
 - **Debug Endpoints**: Built-in debugging tools for troubleshooting DataLad and git operations
 - **Enhanced Error Handling**: Clear error messages with debugging information and suggestions
+
+### 🔍 Git Log & Version Control Features
+- **Unified Interface**: Single-tab design combining commit information and file changes
+- **Real File Diffs**: Actual Git diff content with proper syntax highlighting and formatting
+- **Tree Visualization**: Interactive commit tree showing branching and merging patterns
+- **Streamlined Layout**: Single-line commit display with avatar, author, hash, date, and message
+- **Smart File Tree**: Left panel showing changed files with status indicators (added, modified, deleted)
+- **Live Diff View**: Right panel displaying real-time file differences as you select files
+- **Enhanced Actions**: Right-aligned Copy Hash and Revert buttons for better UX
+- **No Duplication**: Eliminated redundant information display for cleaner interface
 
 ## 🚀 Quick Start
 
@@ -115,18 +125,17 @@ This creates a demo DataLad dataset with sample research files in your home dire
 
 ### 📜 Git Log Visualization
 1. Access the git log from any dataflow via the "Git Log" button
-2. View commit history in a beautiful timeline format similar to Git interfaces
-3. Click on commits to expand and see detailed information
-4. View commit metadata including author, date, hash, and message
-5. Copy commit hashes and explore commit details
-6. Load more commits with pagination support
-7. See summary of added, modified, and deleted files per commit
-8. Use the individual action buttons for:
-    - **View Files**: Click to see exactly what files were modified in each commit
-    - **View File Content**: View the actual content of files at specific commits
-    - **Compare to Local Changes**: See differences between commit and current state
-    - **New Branch**: Create a new branch from any commit
-    - **Checkout Commit**: Switch to a specific commit
+2. View commit history in a beautiful timeline format with tree visualization
+3. **Unified Single-Tab Interface**: Combined commit information and file changes in one view
+4. **Real File Diff Support**: View actual Git diff content instead of placeholder text
+5. **Single-Line Commit Display**: Clean format showing avatar, author, hash, date, and message
+6. **Right-Aligned Actions**: Copy Hash and Revert buttons positioned on the right side
+7. **Interactive File Tree**: Left panel showing changed files with status indicators
+8. **Live Diff View**: Right panel displaying real-time file differences
+9. **Enhanced UX**: No duplicate information, streamlined interface, better space utilization
+10. **Advanced Git Operations**: 
+    - **Copy Hash**: Copy commit hash to clipboard
+    - **View Files**: See exactly what files were modified in each commit
     - **Revert Commit**: Undo changes by creating a revert commit
 
 ### 📎 Adding and Managing Files
@@ -246,11 +255,12 @@ SciTrace/
     │   │   ├── create.html
     │   │   ├── edit.html
     │   │   └── view.html
-    │   └── dataflow/       # Dataflow templates
+    │       └── dataflow/       # Dataflow templates
     │       ├── index.html
     │       ├── create.html
     │       ├── edit.html
-    │       └── view.html
+    │       ├── view.html
+    │       └── git_log.html  # Git log visualization with unified interface
     └── assets/             # Static assets
         ├── js/             # JavaScript files
         │   └── vis.min.js
@@ -258,20 +268,30 @@ SciTrace/
             └── vis.min.css
 ```
 
-### 🔧 Key Features Implementation
+## 🆕 Recent Updates (Latest Version)
 
-#### 🔍 Interactive Dataflow Visualization
-- **Node Click Handling**: JavaScript event listeners for interactive node exploration
-- **Modal System**: Rich modal dialogs for displaying node details and file content
-- **File Serving Routes**: Direct file content and metadata access
-- **AJAX Integration**: Dynamic content loading without page refreshes
-- **File Explorer Integration**: One-click access to file locations
+### 🎉 Git Log UI Complete Redesign (Latest Release)
+SciTrace has undergone a major Git log interface overhaul, bringing significant improvements to the user experience:
 
-#### 📊 Data Management
-- **DataLad Dataset Creation**: Automatic dataset setup with proper structure
-- **File Tree Visualization**: Complete dataset exploration with metadata
-- **Dynamic File Content Serving**: Real-time file access and download
-- **Metadata Exploration**: Comprehensive file information display
+#### ✨ **What's New**
+- **Unified Single-Tab Interface**: Combined commit information and file changes into one streamlined view
+- **Real File Diff Support**: Replaced placeholder content with actual Git diff information from the API
+- **Modern Layout Design**: Single-line commit display with avatar, author, hash, date, and message
+- **Smart Action Placement**: Right-aligned Copy Hash and Revert buttons for better accessibility
+- **Enhanced File Tree**: Interactive left panel showing changed files with status indicators
+- **Live Diff View**: Real-time file difference display in the right panel
+
+#### 🔧 **Technical Improvements**
+- **New API Endpoint**: `/git-operations/file-diff` for real file differences
+- **Enhanced Error Handling**: Better loading states and user-friendly error messages
+- **Responsive Design**: Modern card-based layout with proper spacing and shadows
+- **Code Quality**: Removed redundant code and improved maintainability
+
+#### 🎯 **User Experience Benefits**
+- **Cleaner Interface**: No tab switching required, all information visible at once
+- **Better Readability**: Natural flow from commit info to file changes
+- **Space Efficient**: Optimized use of available screen real estate
+- **Professional Look**: Modern design matching contemporary Git applications
 
 ## 🗺️ Roadmap
 
@@ -302,7 +322,7 @@ SciTrace/
 - **Interactive Reports**: Generate and export comprehensive research reports
 - **Collaborative Features**: Real-time collaboration on research workflows
 - **Data Lifecycle Visualization**: Interactive view of data through its complete lifecycle
-- **Git-like Log View**: Interactive commit history visualization with branching and merging display ✅ **COMPLETED**
+- **Git-like Log View**: Interactive commit history visualization  ✅ **COMPLETED**
 
 #### 🔐 Advanced Security & Access Control
 - **Role-based Permissions**: Granular access control for different user roles
