@@ -16,6 +16,7 @@ A modern web-based platform for managing research data workflows with DataLad in
 - **Data Validation**: Basic file format validation and comprehensive metadata management
 - **Direct DataLad Access**: Execute DataLad commands through the web interface
 - **Commit History Management**: View and manage file commit history through the web interface
+- **Git Log Visualization**: Interactive git log view with timeline visualization, commit details, and statistics
 - **Real-time Updates**: Dataflow visualization automatically reflects all DataLad changes in real-time
 
 ### 👥 Project & Task Management
@@ -111,6 +112,22 @@ This creates a demo DataLad dataset with sample research files in your home dire
 3. Access files directly in the browser or download them
 4. Explore metadata including file sizes, modification dates, and tracking status
 5. Open file locations in your system file explorer with one click
+
+### 📜 Git Log Visualization
+1. Access the git log from any dataflow via the "Git Log" button
+2. View commit history in a beautiful timeline format similar to Git interfaces
+3. Click on commits to expand and see detailed information
+4. View commit metadata including author, date, hash, and message
+5. Copy commit hashes and explore commit details
+6. Load more commits with pagination support
+7. Click "View Files" to see exactly what files were modified in each commit
+8. View the actual content of files at specific commits
+9. See summary of added, modified, and deleted files per commit
+10. Use the **More** button dropdown for:
+    - **Compare to Local Changes**: See differences between commit and current state
+    - **New Branch**: Create a new branch from any commit
+    - **Checkout Commit**: Switch to a specific commit (detached HEAD)
+    - **Revert Commit**: Undo changes by creating a revert commit
 
 ### 📎 Adding and Managing Files
 1. **Web Interface**: Use the built-in DataLad save functionality directly in the web app
@@ -285,7 +302,7 @@ SciTrace/
 - **Interactive Reports**: Generate and export comprehensive research reports
 - **Collaborative Features**: Real-time collaboration on research workflows
 - **Data Lifecycle Visualization**: Interactive view of data through its complete lifecycle
-- **Git-like Log View**: Interactive commit history visualization with branching and merging display
+- **Git-like Log View**: Interactive commit history visualization with branching and merging display ✅ **COMPLETED**
 
 #### 🔐 Advanced Security & Access Control
 - **Role-based Permissions**: Granular access control for different user roles

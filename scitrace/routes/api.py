@@ -992,3 +992,271 @@ def debug_git_config():
         
     except Exception as e:
         return jsonify({'error': f'Git config check failed: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-log', methods=['GET'])
+@login_required
+def get_git_log(dataflow_id):
+    """Get detailed git log for a dataflow's dataset."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Get limit parameter
+        limit = request.args.get('limit', 50, type=int)
+        if limit > 100:  # Cap at 100 commits
+            limit = 100
+        
+        # Use the Project service to get detailed git log
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        commits = project_service.get_detailed_git_log(dataset_path, limit=limit)
+        
+        return jsonify({
+            'success': True,
+            'commits': commits,
+            'total_commits': len(commits)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get git log: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/commit-files/<commit_hash>', methods=['GET'])
+@login_required
+def get_commit_files(dataflow_id, commit_hash):
+    """Get files changed in a specific commit."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to get commit files
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        files = project_service.get_commit_files(dataset_path, commit_hash)
+        
+        return jsonify({
+            'success': True,
+            'commit_hash': commit_hash,
+            'files': files,
+            'total_files': len(files)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get commit files: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/commit-file-content/<commit_hash>', methods=['GET'])
+@login_required
+def get_commit_file_content(dataflow_id, commit_hash):
+    """Get file content at a specific commit."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Get file path from query parameter
+        file_path = request.args.get('file_path')
+        if not file_path:
+            return jsonify({'error': 'No file path provided'}), 400
+        
+        # Use the Project service to get file content
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        content = project_service.get_file_content_at_commit(dataset_path, commit_hash, file_path)
+        
+        return jsonify({
+            'success': True,
+            'commit_hash': commit_hash,
+            'file_path': file_path,
+            'content': content
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get file content: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-operations/revert', methods=['POST'])
+@login_required
+def revert_commit(dataflow_id):
+    """Revert a specific commit."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        data = request.get_json()
+        commit_hash = data.get('commit_hash')
+        commit_message = data.get('commit_message')
+        
+        if not commit_hash:
+            return jsonify({'error': 'No commit hash provided'}), 400
+        
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to revert commit
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        result = project_service.revert_commit(dataset_path, commit_hash, commit_message)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to revert commit: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-operations/new-branch', methods=['POST'])
+@login_required
+def create_branch(dataflow_id):
+    """Create a new branch from a specific commit."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        data = request.get_json()
+        commit_hash = data.get('commit_hash')
+        branch_name = data.get('branch_name')
+        
+        if not commit_hash or not branch_name:
+            return jsonify({'error': 'Commit hash and branch name are required'}), 400
+        
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to create branch
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        result = project_service.create_branch_from_commit(dataset_path, commit_hash, branch_name)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to create branch: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-operations/checkout', methods=['POST'])
+@login_required
+def checkout_commit(dataflow_id):
+    """Checkout a specific commit."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        data = request.get_json()
+        commit_hash = data.get('commit_hash')
+        
+        if not commit_hash:
+            return jsonify({'error': 'No commit hash provided'}), 400
+        
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to checkout commit
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        result = project_service.checkout_commit(dataset_path, commit_hash)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to checkout commit: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-operations/compare', methods=['GET'])
+@login_required
+def compare_commit(dataflow_id):
+    """Compare a commit to the current local state."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        commit_hash = request.args.get('commit_hash')
+        
+        if not commit_hash:
+            return jsonify({'error': 'No commit hash provided'}), 400
+        
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to compare commit
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        result = project_service.compare_commit_to_local(dataset_path, commit_hash)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to compare commit: {str(e)}'}), 500
+
+@bp.route('/dataflows/<int:dataflow_id>/git-operations/current-branch', methods=['GET'])
+@login_required
+def get_current_branch(dataflow_id):
+    """Get the current branch name."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get dataset path
+        dataset_path = dataflow.project.dataset_path
+        if not dataset_path:
+            return jsonify({'error': 'No dataset path found'}), 404
+        
+        # Use the Project service to get current branch
+        from ..services import ProjectService
+        project_service = ProjectService()
+        
+        branch_name = project_service.get_current_branch(dataset_path)
+        
+        return jsonify({
+            'success': True,
+            'current_branch': branch_name
+        })
+        
+    except Exception as e:
+        return jsonify({'error': f'Failed to get current branch: {str(e)}'}), 500

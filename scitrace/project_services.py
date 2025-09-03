@@ -503,3 +503,265 @@ class ProjectService:
                 'error': str(e),
                 'dataset_path': dataset_path
             }
+
+    def get_detailed_git_log(self, dataset_path, limit=50):
+        """Get detailed git log information for comprehensive visualization."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get detailed git log with author, date, and commit info
+            cmd = [
+                'git', 'log', 
+                '--pretty=format:%H|%h|%an|%ae|%ad|%s|%b',
+                '--date=iso',
+                '-n', str(limit)
+            ]
+            
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            commits = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    # Split by | delimiter
+                    parts = line.split('|')
+                    if len(parts) >= 6:
+                        full_hash = parts[0]
+                        short_hash = parts[1]
+                        author_name = parts[2]
+                        author_email = parts[3]
+                        date = parts[4]
+                        message = parts[5]
+                        body = parts[6] if len(parts) > 6 else ""
+                        
+                        # Parse date
+                        try:
+                            from datetime import datetime
+                            parsed_date = datetime.fromisoformat(date.replace('Z', '+00:00'))
+                            formatted_date = parsed_date.strftime('%d. %b %Y at %H:%M')
+                            relative_date = self._get_relative_date(parsed_date)
+                        except:
+                            formatted_date = date
+                            relative_date = "Unknown"
+                        
+                        commits.append({
+                            'full_hash': full_hash,
+                            'short_hash': short_hash,
+                            'author_name': author_name,
+                            'author_email': author_email,
+                            'date': date,
+                            'formatted_date': formatted_date,
+                            'relative_date': relative_date,
+                            'message': message,
+                            'body': body
+                        })
+            
+            return commits
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get detailed git log: {e.stderr}")
+    
+    def _get_relative_date(self, date):
+        """Get relative date string (e.g., '2 hours ago', 'yesterday')."""
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        diff = now - date.replace(tzinfo=timezone.utc)
+        
+        if diff.days == 0:
+            if diff.seconds < 3600:
+                minutes = diff.seconds // 60
+                return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+            else:
+                hours = diff.seconds // 3600
+                return f"{hours} hour{'s' if hours != 1 else ''} ago"
+        elif diff.days == 1:
+            return "Yesterday"
+        elif diff.days < 7:
+            return f"{diff.days} days ago"
+        elif diff.days < 30:
+            weeks = diff.days // 7
+            return f"{weeks} week{'s' if weeks != 1 else ''} ago"
+        elif diff.days < 365:
+            months = diff.days // 30
+            return f"{months} month{'s' if months != 1 else ''} ago"
+        else:
+            years = diff.days // 365
+            return f"{years} year{'s' if years != 1 else ''} ago"
+
+    def get_file_diff(self, dataset_path, commit_hash, file_path):
+        """Get the diff for a specific file in a commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get the diff for the file
+            cmd = ['git', 'show', commit_hash, '--', file_path]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return result.stdout
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get file diff: {e.stderr}")
+    
+    def get_commit_files(self, dataset_path, commit_hash):
+        """Get files changed in a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get files changed in the commit
+            cmd = ['git', 'show', '--name-status', '--pretty=format:', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            files = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    parts = line.split('\t')
+                    if len(parts) == 2:
+                        status = parts[0]
+                        file_path = parts[1]
+                        
+                        # Determine change type
+                        if status == 'A':
+                            change_type = 'Added'
+                        elif status == 'M':
+                            change_type = 'Modified'
+                        elif status == 'D':
+                            change_type = 'Deleted'
+                        elif status == 'R':
+                            change_type = 'Renamed'
+                        else:
+                            change_type = status
+                        
+                        # Get file size if file exists
+                        file_size = None
+                        if status != 'D':  # Not deleted
+                            full_path = os.path.join(dataset_path, file_path)
+                            if os.path.exists(full_path):
+                                file_size = os.path.getsize(full_path)
+                        
+                        files.append({
+                            'path': file_path,
+                            'status': status,
+                            'change_type': change_type,
+                            'size': file_size
+                        })
+            
+            return files
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get commit files: {e.stderr}")
+    
+    def get_file_content_at_commit(self, dataset_path, commit_hash, file_path):
+        """Get file content at a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get file content at the specific commit
+            cmd = ['git', 'show', f'{commit_hash}:{file_path}']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return result.stdout
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to get file content: {e.stderr}")
+    
+    def revert_commit(self, dataset_path, commit_hash, commit_message=None):
+        """Revert a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Create revert commit
+            cmd = ['git', 'revert', '--no-edit', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            # If custom message provided, amend the revert commit
+            if commit_message:
+                subprocess.run(['git', 'commit', '--amend', '-m', commit_message], 
+                             cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully reverted commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to revert commit: {e.stderr}")
+    
+    def create_branch_from_commit(self, dataset_path, commit_hash, branch_name):
+        """Create a new branch from a specific commit."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Create and checkout new branch
+            cmd = ['git', 'checkout', '-b', branch_name, commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully created branch {branch_name} from commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to create branch: {e.stderr}")
+    
+    def checkout_commit(self, dataset_path, commit_hash):
+        """Checkout a specific commit (detached HEAD state)."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Checkout the commit
+            cmd = ['git', 'checkout', commit_hash]
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'message': f'Successfully checked out commit {commit_hash}',
+                'output': result.stdout
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to checkout commit: {e.stderr}")
+    
+    def compare_commit_to_local(self, dataset_path, commit_hash):
+        """Compare a commit to the current local state."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            # Get diff between commit and current state
+            cmd = ['git', 'diff', commit_hash, 'HEAD']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            
+            return {
+                'success': True,
+                'diff': result.stdout,
+                'has_changes': bool(result.stdout.strip())
+            }
+            
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to compare commit: {e.stderr}")
+    
+    def get_current_branch(self, dataset_path):
+        """Get the current branch name."""
+        if not os.path.exists(dataset_path):
+            raise Exception("Dataset path does not exist")
+        
+        try:
+            cmd = ['git', 'branch', '--show-current']
+            result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            # If no branch (detached HEAD), return the commit hash
+            try:
+                cmd = ['git', 'rev-parse', 'HEAD']
+                result = subprocess.run(cmd, cwd=dataset_path, capture_output=True, text=True, check=True)
+                return f"HEAD ({result.stdout.strip()[:8]})"
+            except subprocess.CalledProcessError:
+                return "Unknown"
