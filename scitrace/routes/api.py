@@ -97,7 +97,7 @@ def regenerate_dataflow(dataflow_id):
         # If still not found, try to find it in the expected location
         if not dataset_path:
             home_dir = os.path.expanduser("~")
-            expected_path = os.path.join(home_dir, "scitrace_datasets", "DOM_ENV_MODEL")
+            expected_path = os.path.join(home_dir, "scitrace_demo_datasets", "DOM_ENV_MODEL")
             if os.path.exists(expected_path):
                 dataset_path = expected_path
                 # Update the project with the found path
@@ -245,7 +245,7 @@ def open_folder():
 @bp.route('/setup-demo', methods=['POST'])
 @login_required
 def setup_demo():
-    """Set up demo project and dataflow."""
+    """Set up demo projects and dataflows using the new DataLad-based demo system."""
     # Check if user is admin
     if current_user.role != 'admin':
         return jsonify({'error': 'Access denied. Admin role required.'}), 403
@@ -255,12 +255,15 @@ def setup_demo():
         import subprocess
         import sys
         
-        # Run the demo setup script
-        result = subprocess.run([sys.executable, 'setup_demo.py'], 
+        # Run the new DataLad-based demo setup script
+        result = subprocess.run([sys.executable, 'setup_demo_datalad.py'], 
                               capture_output=True, text=True, cwd=os.getcwd())
         
         if result.returncode == 0:
-            return jsonify({'success': True, 'message': 'Demo setup completed successfully'})
+            return jsonify({
+                'success': True, 
+                'message': 'Demo projects loaded successfully! Created 3 research datasets with DataLad integration.'
+            })
         else:
             return jsonify({'error': result.stderr}), 500
             

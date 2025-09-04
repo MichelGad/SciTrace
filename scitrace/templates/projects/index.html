@@ -27,6 +27,32 @@
         </div>
     </div>
 
+    <!-- Demo Projects Info -->
+    {% set has_demo_projects = false %}
+    {% for project in projects %}
+        {% if "Demo" in project.name or "Research" in project.name %}
+            {% set has_demo_projects = true %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if has_demo_projects %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>
+                    <strong>Demo Projects Available!</strong> 
+                    You have access to sample research projects with DataLad integration. 
+                    These projects demonstrate realistic research workflows and data management practices.
+                    <br><small class="text-muted mt-1">
+                        Look for projects marked with a yellow "Demo" badge to explore sample research data.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Projects Grid -->
     <div class="row">
         {% for project in projects %}
@@ -38,9 +64,14 @@
                             <h5 class="card-title mb-1">{{ project.name }}</h5>
                             <small class="text-muted">ID: {{ project.project_id }}</small>
                         </div>
-                        <span class="badge badge-{{ 'done' if project.status == 'completed' else 'ongoing' }}">
-                            {{ project.status.title() }}
-                        </span>
+                        <div class="d-flex gap-2">
+                            {% if "Demo" in project.name or "Research" in project.name %}
+                            <span class="badge bg-warning">Demo</span>
+                            {% endif %}
+                            <span class="badge badge-{{ 'done' if project.status == 'completed' else 'ongoing' }}">
+                                {{ project.status.title() }}
+                            </span>
+                        </div>
                     </div>
                     
                     <p class="card-text text-muted">

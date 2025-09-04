@@ -8,7 +8,9 @@ A modern web-based platform for managing research data workflows with DataLad in
 - **Full DataLad Integration**: Seamless integration with DataLad for robust data versioning and management
 - **Interactive Dataflow Visualization**: Click on nodes to view metadata, access files, and explore data relationships
 - **File Management**: View file content directly in the browser or download files with one click
-- **Automatic Dataset Creation**: New dataflows automatically create properly structured DataLad datasets
+- **Automatic Dataset Creation**: New dataflows automatically create properly structured DataLad datasets using `create-test-dataset`
+- **Research Type Selection**: Choose from Environmental, Biomedical, Computational, or General research structures
+- **Professional Directory Organization**: Automatic creation of `raw_data`, `scripts`, `results`, and `plots` directories
 - **File Explorer Integration**: Open file locations in your system file explorer directly from the web interface
 - **File Restoration**: Restore deleted files from previous commits with enhanced error handling and debugging
 - **Web-based DataLad Operations**: Save files and commit changes directly through the web interface - no terminal required
@@ -93,14 +95,38 @@ A modern web-based platform for managing research data workflows with DataLad in
 
 ## 🎯 Demo Setup
 
-To quickly explore SciTrace with sample data, you can set up a comprehensive demo environment:
+To quickly explore SciTrace with sample data, you can set up a comprehensive demo environment using the new DataLad-based demo system:
 
-```bash
-# Run the complete demo setup
-python setup_demo.py
-```
+1. **Start SciTrace**: Run `python run.py` and access the application
+2. **Login**: Use admin/admin123 credentials
+3. **Click "Load Demo Projects"**: Use the button in the dashboard
+4. **Automatic Setup**: The system will create 3 realistic research datasets automatically
 
-This creates a demo DataLad dataset with sample research files in your home directory, allowing you to immediately test all features.
+This creates **3 realistic research datasets** with proper DataLad integration:
+
+### 🌊 **Environmental Research Dataset**
+- **Structure**: Water quality, air quality, soil samples
+- **Files**: Data cleaning scripts, statistical analysis, visualization tools
+- **Spec**: `datalad create-test-dataset --spec "3-5/2-4" --seed 42`
+
+### 🏥 **Biomedical Research Dataset**
+- **Structure**: Patient records, lab results, clinical data
+- **Files**: Data preprocessing, statistical tests, machine learning scripts
+- **Spec**: `datalad create-test-dataset --spec "4-6/2-3" --seed 123`
+
+### 🤖 **Computational Research Dataset**
+- **Structure**: Training data, validation data, model evaluation
+- **Files**: Model training, hyperparameter tuning, evaluation scripts
+- **Spec**: `datalad create-test-dataset --spec "2-4/3-5" --seed 456`
+
+### 🚀 **What You Get**
+- **Professional Research Structure**: Realistic directory organization
+- **Sample Scripts**: Python and R scripts for data analysis
+- **DataLad Integration**: Full version control and data lineage tracking
+- **Interactive Visualization**: Ready-to-explore dataflows in SciTrace
+- **Demo Badges**: Clear identification of demo projects throughout the interface
+
+The demo datasets are created in `~/scitrace_demo_datasets/` and provide a comprehensive testing environment for all SciTrace features.
 
 ## 📖 Usage Guide
 
@@ -152,24 +178,10 @@ This creates a demo DataLad dataset with sample research files in your home dire
 5. Enhanced error handling provides clear feedback for any issues
 
 ### 🔄 Resetting Data
-
-#### 🌐 Web Interface
 - Dashboard: "Reset All Data" button in the user profile dropdown
 - Projects Page: "Reset Projects" button
 - Tasks Page: "Reset Tasks" button
 - Dataflows Page: "Reset Dataflows" button
-
-#### 💻 Command Line
-```bash
-# List all users and their project counts
-python reset_data.py list
-
-# Reset all data for all users
-python reset_data.py all
-
-# Reset data for a specific user
-python reset_data.py user <user_id>
-```
 
 **Warning**: Reset functionality permanently deletes all projects, dataflows, tasks, and their associated DataLad dataset directories.
 
@@ -214,7 +226,7 @@ SciTrace/
 ├── run.py                    # Application entry point
 ├── install.sh               # Installation script
 ├── requirements.txt         # Python dependencies
-├── setup_demo.py           # Demo data setup script
+├── setup_demo_datalad.py   # New DataLad-based demo setup script
 ├── reset_data.py           # Data reset utilities
 ├── LICENSE                 # Apache License 2.0
 ├── README.md               # Project documentation

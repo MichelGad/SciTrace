@@ -52,6 +52,17 @@
                                       placeholder="Describe your dataflow and research workflow"></textarea>
                         </div>
                         
+                        <div class="mb-3">
+                            <label for="research_type" class="form-label fw-medium">Research Type</label>
+                            <select class="form-select" id="research_type" name="research_type">
+                                <option value="general">General Research</option>
+                                <option value="environmental">Environmental Research</option>
+                                <option value="biomedical">Biomedical Research</option>
+                                <option value="computational">Computational Research</option>
+                            </select>
+                            <div class="form-text">Select the research type to determine the dataset structure and sample files</div>
+                        </div>
+                        
                         <div class="mb-4">
                             <label for="storage_path" class="form-label fw-medium">Storage Location *</label>
                             <div class="input-group">
@@ -70,7 +81,8 @@
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
                             <strong>Note:</strong> The dataflow will be automatically generated from your project's dataset structure. 
-                            Make sure your DataLad dataset contains the files and directories you want to visualize.
+                            The research type you select will determine the directory structure created in your DataLad dataset. 
+                            Directories will be created empty, ready for you to add your own files.
                         </div>
                         
                         <div class="d-flex gap-2">

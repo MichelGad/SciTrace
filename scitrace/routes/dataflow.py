@@ -41,6 +41,7 @@ def create():
         name = request.form.get('name')
         description = request.form.get('description', '')
         project_id = request.form.get('project_id')
+        research_type = request.form.get('research_type', 'general')
         storage_path = request.form.get('storage_path')
         
         if not name or not project_id:
@@ -71,8 +72,8 @@ def create():
                 dataset_name = f"{project.name.lower().replace(' ', '_')}_dataset"
                 dataset_path = os.path.join(storage_path, dataset_name)
                 
-                # Create the dataset
-                datalad_service.create_dataset(dataset_path, project.name)
+                # Create the dataset with research type
+                datalad_service.create_dataset(dataset_path, project.name, research_type)
                 
                 # Update project with dataset path
                 project.dataset_path = dataset_path

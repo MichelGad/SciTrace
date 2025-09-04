@@ -16,55 +16,106 @@ class DataLadService:
     
     def __init__(self):
         home_dir = os.path.expanduser("~")
-        self.base_path = os.environ.get('DATALAD_BASE_PATH', os.path.join(home_dir, 'scitrace_datasets'))
+        self.base_path = os.environ.get('DATALAD_BASE_PATH', os.path.join(home_dir, 'scitrace_demo_datasets'))
         os.makedirs(self.base_path, exist_ok=True)
     
-    def create_dataset(self, dataset_path, name=None):
-        """Create a new DataLad dataset at the specified path."""
+    def create_dataset(self, dataset_path, name=None, research_type="general"):
+        """Create a new DataLad dataset at the specified path using the demo structure."""
         
         if os.path.exists(dataset_path):
             raise Exception(f"Dataset already exists at {dataset_path}")
         
         try:
-            # Create DataLad dataset
+            # Create DataLad dataset using create-test-dataset (like demo)
             print(f"Creating DataLad dataset at: {dataset_path}")
-            result = subprocess.run(['datalad', 'create', dataset_path], check=True, capture_output=True, text=True)
-            print(f"DataLad create result: {result.stdout}")
             
-            # Verify dataset was created
-            if not os.path.exists(os.path.join(dataset_path, '.datalad')):
-                raise Exception("DataLad dataset was not created properly - missing .datalad directory")
+            # Use create-test-dataset for consistent structure with demo
+            cmd = ['datalad', 'create-test-dataset']
             
-            # Create standard research directory structure
-            directories = [
-                'raw_data',
-                'preprocessed', 
-                'scripts',
-                'results',
-                'plots'
-            ]
+            # Add research type specific parameters
+            if research_type == "environmental":
+                cmd.extend(['--spec', '3-5/2-4'])
+            elif research_type == "biomedical":
+                cmd.extend(['--spec', '4-6/2-3'])
+            elif research_type == "computational":
+                cmd.extend(['--spec', '2-4/3-5'])
+            else:
+                # Default structure for general research
+                cmd.extend(['--spec', '3-4/2-3'])
             
-            for directory in directories:
-                dir_path = os.path.join(dataset_path, directory)
-                os.makedirs(dir_path, exist_ok=True)
-                print(f"Created directory: {dir_path}")
-                # Add to DataLad
-                result = subprocess.run(['datalad', 'save', '-m', f'Add {directory} directory'], cwd=dataset_path, check=True, capture_output=True, text=True)
-                print(f"Saved {directory} directory: {result.stdout}")
+            # Add seed for reproducibility
+            import random
+            seed = random.randint(1, 1000)
+            cmd.extend(['--seed', str(seed)])
             
-            # Create initial project files
-            project_name = name or os.path.basename(dataset_path)
-            readme_content = f"""# {project_name}
+            cmd.append(dataset_path)
+            
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            print(f"DataLad create-test-dataset result: {result.stdout}")
+            
+            # Verify dataset was created (create-test-dataset creates .git directory)
+            if not os.path.exists(os.path.join(dataset_path, '.git')):
+                raise Exception("DataLad dataset was not created properly - missing .git directory")
+            
+            # Create empty directory structure without sample files
+            self.create_empty_structure(dataset_path, research_type, name)
+            
+            return {
+                'dataset_path': dataset_path,
+                'status': 'created',
+                'research_type': research_type,
+                'seed': seed,
+                'message': f'Created empty DataLad dataset with {research_type} research structure'
+            }
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Failed to create DataLad dataset: {e.stderr}")
+    
+    def create_empty_structure(self, dataset_path, research_type, project_name):
+        """Create empty directory structure without sample files."""
+        print(f"Creating empty directory structure for {research_type} research...")
+        
+        # Create research-specific directories (empty)
+        research_dirs = {
+            "environmental": ["raw_data", "scripts", "results", "plots"],
+            "biomedical": ["raw_data", "scripts", "results", "plots"],
+            "computational": ["raw_data", "scripts", "results", "plots"],
+            "general": ["raw_data", "scripts", "results", "plots"]
+        }
+        
+        dirs = research_dirs.get(research_type, research_dirs["general"])
+        
+        for dir_name in dirs:
+            dir_path = os.path.join(dataset_path, dir_name)
+            os.makedirs(dir_path, exist_ok=True)
+            print(f"     ✅ Created empty directory: {dir_name}")
+        
+        # Create basic README without sample content
+        self.create_basic_readme(dataset_path, project_name, research_type)
+        
+        # Add empty directories to DataLad
+        try:
+            subprocess.run(['datalad', 'add', '.'], cwd=dataset_path, check=True, capture_output=True)
+            subprocess.run(['datalad', 'save', '-m', f'Create empty structure for {project_name} ({research_type})'], 
+                         cwd=dataset_path, check=True, capture_output=True)
+            print(f"     🔄 Saved empty structure to DataLad: {os.path.basename(dataset_path)}")
+        except subprocess.CalledProcessError as e:
+            print(f"     ⚠️ Warning: Could not save to DataLad: {e}")
+    
+    def create_basic_readme(self, dataset_path, project_name, research_type):
+        """Create a basic README file without sample content."""
+        readme_content = f"""# {project_name}
 
 ## Project Overview
 This dataset contains research data and analysis for the {project_name} project.
 
+## Research Type
+{research_type.title()} Research
+
 ## Directory Structure
 - `raw_data/` - Original data files
-- `preprocessed/` - Cleaned and prepared data
-- `analysis/` - Statistical analysis and results
-- `models/` - Machine learning models
-- `visualizations/` - Plots and charts
+- `scripts/` - Analysis and processing scripts
+- `results/` - Analysis results and outputs
+- `plots/` - Visualizations and charts
 
 ## DataLad Commands
 ```bash
@@ -82,60 +133,325 @@ datalad status
 ```
 
 ## Project Information
-- Created: {datetime.now().strftime('%Y-%m-%d')}
+- Created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 - Dataset Path: {dataset_path}
+- Research Type: {research_type.title()}
+- Managed by: SciTrace
+
+## Getting Started
+1. Add your data files to the appropriate directories
+2. Create analysis scripts in the scripts/ directory
+3. Save your work with DataLad commands
+4. Use SciTrace to visualize your dataflow
+"""
+        
+        readme_path = os.path.join(dataset_path, 'README.md')
+        with open(readme_path, 'w') as f:
+            f.write(readme_content)
+    
+    def add_research_content(self, dataset_path, research_type, project_name):
+        """Add research-specific content to the dataset."""
+        print(f"Adding {research_type} research content to {os.path.basename(dataset_path)}...")
+        
+        # Create research-specific directories and files
+        research_structure = {
+            "environmental": {
+                "raw_data": ["water_samples", "air_quality", "soil_samples"],
+                "scripts": ["data_cleaning.py", "statistical_analysis.R", "visualization.py"],
+                "results": ["water_quality_report.pdf", "statistical_summary.csv", "correlation_analysis.json"],
+                "plots": ["water_quality_trends.png", "correlation_heatmap.png", "geographic_distribution.png"]
+            },
+            "biomedical": {
+                "raw_data": ["patient_records", "lab_results", "imaging_data"],
+                "scripts": ["data_preprocessing.py", "statistical_tests.R", "machine_learning.py"],
+                "results": ["clinical_analysis_report.pdf", "statistical_results.csv", "ml_model_performance.json"],
+                "plots": ["patient_demographics.png", "treatment_outcomes.png", "feature_importance.png"]
+            },
+            "computational": {
+                "raw_data": ["training_data", "validation_data", "test_data"],
+                "scripts": ["model_training.py", "hyperparameter_tuning.py", "evaluation.py"],
+                "results": ["model_performance.pdf", "training_metrics.csv", "hyperparameter_results.json"],
+                "plots": ["training_curves.png", "confusion_matrix.png", "feature_importance.png"]
+            },
+            "general": {
+                "raw_data": ["input_data", "reference_data"],
+                "scripts": ["main_analysis.py", "data_processing.py", "visualization.py"],
+                "results": ["analysis_report.pdf", "results_summary.csv", "output_data.json"],
+                "plots": ["main_results.png", "data_overview.png", "analysis_charts.png"]
+            }
+        }
+        
+        if research_type not in research_structure:
+            research_type = "general"
+        
+        dirs = research_structure[research_type]
+        
+        for dir_name, files in dirs.items():
+            dir_path = os.path.join(dataset_path, dir_name)
+            os.makedirs(dir_path, exist_ok=True)
+            
+            # Create sample files
+            for filename in files:
+                file_path = os.path.join(dir_path, filename)
+                
+                if filename.endswith('.py'):
+                    content = self.create_python_script(filename, research_type, project_name)
+                elif filename.endswith('.R'):
+                    content = self.create_r_script(filename, research_type, project_name)
+                elif filename.endswith('.csv'):
+                    content = self.create_csv_data(filename, research_type)
+                elif filename.endswith('.json'):
+                    content = json.dumps(self.create_json_data(filename, research_type), indent=2)
+                elif filename.endswith('.md'):
+                    content = self.create_markdown_file(filename, research_type, project_name)
+                else:
+                    # For other files, create placeholder content
+                    content = f"# {filename}\n\nThis is a sample {filename} file for {research_type} research.\n\nGenerated by SciTrace for project: {project_name}\n\nCreated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                
+                with open(file_path, 'w') as f:
+                    f.write(content)
+                
+                print(f"     ✅ Created: {dir_name}/{filename}")
+        
+        # Create project-specific README
+        self.create_project_readme(dataset_path, project_name, research_type)
+        
+        # Add all files to DataLad
+        try:
+            subprocess.run(['datalad', 'add', '.'], cwd=dataset_path, check=True, capture_output=True)
+            subprocess.run(['datalad', 'save', '-m', f'Add research content for {project_name} ({research_type})'], 
+                         cwd=dataset_path, check=True, capture_output=True)
+            print(f"     🔄 Saved to DataLad: {os.path.basename(dataset_path)}")
+        except subprocess.CalledProcessError as e:
+            print(f"     ⚠️ Warning: Could not save to DataLad: {e}")
+    
+    def create_project_readme(self, dataset_path, project_name, research_type):
+        """Create a project-specific README file."""
+        readme_content = f"""# {project_name}
+
+## Project Overview
+This dataset contains research data and analysis for the {project_name} project.
+
+## Research Type
+{research_type.title()} Research
+
+## Directory Structure
+- `raw_data/` - Original data files
+- `scripts/` - Analysis and processing scripts
+- `results/` - Analysis results and outputs
+- `plots/` - Visualizations and charts
+
+## DataLad Commands
+```bash
+# Get the latest version
+datalad get .
+
+# Add new files
+datalad save -m "Add new file"
+
+# Save changes
+datalad save -m "Description of changes"
+
+# Check status
+datalad status
+```
+
+## Project Information
+- Created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- Dataset Path: {dataset_path}
+- Research Type: {research_type.title()}
 - Managed by: SciTrace
 """
             
-            readme_path = os.path.join(dataset_path, 'README.md')
-            with open(readme_path, 'w') as f:
-                f.write(readme_content)
-            
-            # Create .gitignore for common research files
-            gitignore_content = """# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.env
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Data files (uncomment if you want to ignore large data files)
-# *.csv
-# *.xlsx
-# *.h5
-# *.pkl
-
-# Results and outputs
-results/temp/
-*.tmp
-
-# OS files
-.DS_Store
-Thumbs.db
+        readme_path = os.path.join(dataset_path, 'README.md')
+        with open(readme_path, 'w') as f:
+            f.write(readme_content)
+    
+    def create_python_script(self, filename, research_type, project_name):
+        """Create a realistic Python script based on research type."""
+        if "cleaning" in filename.lower():
+            return f'''#!/usr/bin/env python3
 """
-            
-            gitignore_path = os.path.join(dataset_path, '.gitignore')
-            with open(gitignore_path, 'w') as f:
-                f.write(gitignore_content)
-            
-            # Add all files to DataLad
-            result = subprocess.run(['datalad', 'save', '-m', f'Initial project setup: {project_name}'], cwd=dataset_path, check=True, capture_output=True, text=True)
-            print(f"Final save result: {result.stdout}")
-            
-            return {
-                'dataset_path': dataset_path,
-                'status': 'created',
-                'directories': directories,
-                'message': f'Created DataLad dataset with {len(directories)} directories'
+Data Cleaning Script for {research_type.title()} Research
+Project: {project_name}
+Generated by SciTrace
+"""
+
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+def clean_data(input_file, output_file):
+    """Clean and preprocess the input data."""
+    print(f"Loading data from {{input_file}}...")
+    
+    # Load data
+    try:
+        data = pd.read_csv(input_file)
+        print(f"Loaded {{len(data)}} rows and {{len(data.columns)}} columns")
+    except Exception as e:
+        print(f"Error loading data: {{e}}")
+        return None
+    
+    # Basic cleaning
+    data = data.dropna()
+    data = data.drop_duplicates()
+    
+    # Save cleaned data
+    data.to_csv(output_file, index=False)
+    print(f"Cleaned data saved to {{output_file}}")
+    
+    return data
+
+if __name__ == "__main__":
+    clean_data("raw_data/input.csv", "preprocessed/cleaned_data.csv")
+'''
+        elif "analysis" in filename.lower():
+            return f'''#!/usr/bin/env python3
+"""
+Data Analysis Script for {research_type.title()} Research
+Project: {project_name}
+Generated by SciTrace
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def analyze_data(data_file):
+    """Perform basic statistical analysis on the data."""
+    print(f"Analyzing data from {{data_file}}...")
+    
+    # Load data
+    data = pd.read_csv(data_file)
+    
+    # Basic statistics
+    print("\\nData Summary:")
+    print(data.describe())
+    
+    # Create visualizations
+    plt.figure(figsize=(10, 6))
+    data.hist(bins=20)
+    plt.title(f"Data Distribution - {{project_name}}")
+    plt.savefig("plots/data_distribution.png")
+    plt.close()
+    
+    print("Analysis complete. Check plots/ directory for visualizations.")
+    
+    return data.describe()
+
+if __name__ == "__main__":
+    analyze_data("preprocessed/cleaned_data.csv")
+'''
+        else:
+            return f'''#!/usr/bin/env python3
+"""
+{filename.replace('.py', '').replace('_', ' ').title()} Script
+Project: {project_name}
+Research Type: {research_type.title()}
+Generated by SciTrace
+"""
+
+def main():
+    """Main function for {filename}."""
+    print(f"Running {{filename}} for {{project_name}}")
+    print(f"Research type: {{research_type}}")
+    
+    # TODO: Implement your analysis here
+    
+    print("Script execution complete!")
+
+if __name__ == "__main__":
+    main()
+'''
+    
+    def create_r_script(self, filename, research_type, project_name):
+        """Create a realistic R script based on research type."""
+        return f'''# {filename}
+# {research_type.title()} Research Script
+# Project: {project_name}
+# Generated by SciTrace
+
+# Load required libraries
+library(tidyverse)
+library(ggplot2)
+
+# Set working directory
+setwd("{research_type}")
+
+# TODO: Implement your R analysis here
+print("R script loaded successfully!")
+
+# Example: Create a simple plot
+# data <- data.frame(x = 1:10, y = rnorm(10))
+# ggplot(data, aes(x, y)) + geom_point() + ggtitle("{project_name}")
+'''
+    
+    def create_csv_data(self, filename, research_type):
+        """Create sample CSV data based on research type."""
+        import pandas as pd
+        import numpy as np
+        
+        if "summary" in filename.lower():
+            data = {
+                'metric': ['mean', 'std', 'min', 'max', 'count'],
+                'value': [np.random.normal(100, 20), np.random.normal(15, 5), 
+                         np.random.uniform(50, 150), np.random.uniform(150, 250), 
+                         np.random.randint(100, 1000)]
             }
-        except subprocess.CalledProcessError as e:
-            raise Exception(f"Failed to create DataLad dataset: {e.stderr.decode()}")
+        else:
+            # Create sample data
+            n_samples = np.random.randint(50, 200)
+            data = {
+                'id': range(1, n_samples + 1),
+                'value': np.random.normal(100, 20, n_samples),
+                'category': np.random.choice(['A', 'B', 'C'], n_samples),
+                'timestamp': pd.date_range(start='2024-01-01', periods=n_samples, freq='D')
+            }
+        
+        return pd.DataFrame(data).to_csv(index=False)
+    
+    def create_json_data(self, filename, research_type):
+        """Create sample JSON data based on research type."""
+        return {
+            "project": f"{research_type}_research",
+            "analysis_date": datetime.now().isoformat(),
+            "parameters": {
+                "sample_size": np.random.randint(100, 1000),
+                "confidence_level": 0.95,
+                "method": "standard_analysis"
+            },
+            "results": {
+                "mean": np.random.normal(100, 20),
+                "std": np.random.normal(15, 5),
+                "p_value": np.random.uniform(0, 1)
+            }
+        }
+    
+    def create_markdown_file(self, filename, research_type, project_name):
+        """Create a markdown file based on research type."""
+        return f"""# {filename.replace('.md', '').replace('_', ' ').title()}
+
+## Project: {project_name}
+**Research Type:** {research_type.title()}
+
+## Overview
+This document contains analysis results and findings for the {project_name} project.
+
+## Key Findings
+- Sample analysis completed successfully
+- Data quality assessment performed
+- Statistical tests conducted
+
+## Next Steps
+1. Review results
+2. Validate findings
+3. Prepare final report
+
+---
+*Generated by SciTrace on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
+"""
     
     def get_dataset_info(self, dataset_path):
         """Get information about a DataLad dataset."""

@@ -54,7 +54,9 @@
                     <select class="form-select" id="project-filter">
                         <option value="">All Projects</option>
                         {% for project in projects %}
-                        <option value="{{ project.id }}">{{ project.name }}</option>
+                        <option value="{{ project.id }}">
+                            {{ project.name }}{% if "Demo" in project.name or "Research" in project.name %} (Demo){% endif %}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -102,9 +104,14 @@
                                 </div>
                             </td>
                             <td>
-                                <a href="{{ url_for('projects.view', project_id=task.project_id) }}" class="text-decoration-none">
-                                    {{ task.project.name if task.project else 'Unknown Project' }}
-                                </a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{{ url_for('projects.view', project_id=task.project_id) }}" class="text-decoration-none">
+                                        {{ task.project.name if task.project else 'Unknown Project' }}
+                                    </a>
+                                    {% if "Demo" in task.project.name or "Research" in task.project.name %}
+                                    <span class="badge bg-warning">Demo</span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
                                 <span class="badge badge-{{ task.priority }}">

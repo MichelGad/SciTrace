@@ -139,7 +139,7 @@
                     </div>
                     <div class="d-flex flex-column gap-2">
                         <button onclick="loadDemoProject(); return false;" class="btn btn-sm btn-warning w-100">
-                            <i class="fas fa-play me-1"></i>Load Demo Project
+                            <i class="fas fa-play me-1"></i>Load Demo Projects
                         </button>
                         <small class="text-muted text-center">Explore sample research data</small>
                     </div>
@@ -175,7 +175,7 @@
                             <div>
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <h6 class="mb-1">{{ task.title }}</h6>
-                                    {% if task.project.name == "DOM ENV Model" and user.role == 'admin' %}
+                                    {% if "Demo" in task.project.name or "Research" in task.project.name %}
                                     <span class="badge bg-warning">Demo</span>
                                     {% endif %}
                                 </div>
@@ -232,10 +232,12 @@
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="card-title mb-0">{{ project.name }}</h6>
-                                        {% if project.name == "DOM ENV Model" and user.role == 'admin' %}
-                                        <span class="badge bg-warning">Demo</span>
-                                        {% endif %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h6 class="card-title mb-0">{{ project.name }}</h6>
+                                            {% if "Demo" in project.name or "Research" in project.name %}
+                                            <span class="badge bg-warning">Demo</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <p class="card-text text-muted small">{{ project.description[:80] }}{% if project.description|length > 80 %}...{% endif %}</p>
                                     <div class="d-flex justify-content-between align-items-center">
@@ -268,7 +270,7 @@
                     {% if user.role == 'admin' %}
                     <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
                         <i class="fas fa-info-circle me-2"></i>
-                        <small>Demo dataflows are available for exploration. Look for dataflows marked with a yellow 'Demo' badge.</small>
+                        <small>Demo projects with DataLad integration are available. Click "Load Demo Projects" to set up 3 research datasets.</small>
                     </div>
                     {% endif %}
                     <div class="row">
@@ -277,10 +279,12 @@
                             <div class="card border">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="card-title mb-0">{{ dataflow.name }}</h6>
-                                        {% if dataflow.name == "DOM ENV Model Workflow" and user.role == 'admin' %}
-                                        <span class="badge bg-warning">Demo</span>
-                                        {% endif %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h6 class="card-title mb-0">{{ dataflow.name }}</h6>
+                                            {% if "Demo" in dataflow.name or "Workflow" in dataflow.name or "Demo" in dataflow.project.name or "Research" in dataflow.project.name %}
+                                            <span class="badge bg-warning">Demo</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <p class="card-text text-muted small">{{ dataflow.description[:80] }}{% if dataflow.description|length > 80 %}...{% endif %}</p>
                                     <div class="d-flex justify-content-between align-items-center">
@@ -305,11 +309,11 @@
 
 <script>
 function loadDemoProject() {
-    if (confirm('This will set up a demo project with the DOM ENV Model dataflow. Continue?')) {
+    if (confirm('This will set up 3 demo research projects with DataLad integration:\n\n• Environmental Research (Water Quality)\n• Biomedical Research (Clinical Data)\n• Computational Research (Machine Learning)\n\nContinue?')) {
         // Show loading state
         const button = event.target;
         const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading Demo...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading Demo Projects...';
         button.disabled = true;
         
         // Make AJAX call to setup demo
@@ -322,15 +326,15 @@ function loadDemoProject() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Demo project loaded successfully! Redirecting to dataflow...');
-                window.location.href = '/dataflow';
+                alert('Demo projects loaded successfully! Created 3 research datasets with DataLad integration. Redirecting to projects...');
+                window.location.href = '/projects';
             } else {
                 alert('Error loading demo: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error loading demo project');
+            alert('Error loading demo projects');
         })
         .finally(() => {
             // Restore button state

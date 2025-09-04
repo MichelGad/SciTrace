@@ -38,10 +38,15 @@
                             <h5 class="card-title mb-1">{{ dataflow.name }}</h5>
                             <small class="text-muted">Project: {{ dataflow.project.name }}</small>
                         </div>
-                        <span class="badge bg-primary">
-                            <i class="fas fa-share-alt me-1"></i>
-                            Dataflow
-                        </span>
+                        <div class="d-flex gap-2">
+                            {% if "Demo" in dataflow.project.name or "Research" in dataflow.project.name %}
+                            <span class="badge bg-warning">Demo</span>
+                            {% endif %}
+                            <span class="badge bg-primary">
+                                <i class="fas fa-share-alt me-1"></i>
+                                Dataflow
+                            </span>
+                        </div>
                     </div>
                     
                     <p class="card-text text-muted">
