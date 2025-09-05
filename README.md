@@ -272,6 +272,7 @@ SciTrace/
     │       ├── create.html
     │       ├── edit.html
     │       ├── view.html
+    │       ├── lifecycle.html  # Data lifecycle conceptual workflow view
     │       └── git_log.html  # Git log visualization with unified interface
     └── assets/             # Static assets
         ├── js/             # JavaScript files
@@ -282,28 +283,26 @@ SciTrace/
 
 ## 🆕 Recent Updates (Latest Version)
 
-### 🎉 Git Log UI Complete Redesign (Latest Release)
-SciTrace has undergone a major Git log interface overhaul, bringing significant improvements to the user experience:
+### 🎉 Major UI Overhaul & New Data Lifecycle View
+SciTrace has undergone significant improvements with a new dedicated view and comprehensive UI standardization:
 
-#### ✨ **What's New**
-- **Unified Single-Tab Interface**: Combined commit information and file changes into one streamlined view
-- **Real File Diff Support**: Replaced placeholder content with actual Git diff information from the API
-- **Modern Layout Design**: Single-line commit display with avatar, author, hash, date, and message
-- **Smart Action Placement**: Right-aligned Copy Hash and Revert buttons for better accessibility
-- **Enhanced File Tree**: Interactive left panel showing changed files with status indicators
-- **Live Diff View**: Real-time file difference display in the right panel
+#### ✨ **New Features**
+- **Data Lifecycle View**: Dedicated conceptual workflow visualization separate from repository structure
+- **Interactive Workflow Stages**: Click on stages to view detailed research process descriptions
+- **Unified Git Log Interface**: Single-tab design with real file diffs and streamlined commit display
+- **Consistent Navigation**: Standardized "Repo View", "Data Lifecycle", and "Git Log" terminology
 
-#### 🔧 **Technical Improvements**
-- **New API Endpoint**: `/git-operations/file-diff` for real file differences
-- **Enhanced Error Handling**: Better loading states and user-friendly error messages
-- **Responsive Design**: Modern card-based layout with proper spacing and shadows
-- **Code Quality**: Removed redundant code and improved maintainability
+#### 🎨 **UI Improvements**
+- **Header Standardization**: Consistent styling and iconography across all dataflow views
+- **Icon Consistency**: Matching Font Awesome icons (fa-folder-tree, fa-sitemap, fa-code-branch)
+- **Cleaner Interface**: Removed cluttered elements and improved visual hierarchy
+- **Professional Design**: Bootstrap-standard containers and responsive layouts
 
-#### 🎯 **User Experience Benefits**
-- **Cleaner Interface**: No tab switching required, all information visible at once
-- **Better Readability**: Natural flow from commit info to file changes
-- **Space Efficient**: Optimized use of available screen real estate
-- **Professional Look**: Modern design matching contemporary Git applications
+#### 🔧 **Technical Enhancements**
+- **New Route**: `/dataflow/<id>/lifecycle` for dedicated lifecycle visualization
+- **Real File Diffs**: Actual Git diff content with proper syntax highlighting
+- **Enhanced Navigation**: Improved button placement and user flow
+- **Better Error Handling**: User-friendly messages and loading states
 
 ## 🗺️ Roadmap
 
@@ -333,7 +332,7 @@ SciTrace has undergone a major Git log interface overhaul, bringing significant 
 - **Execution Graphs**: Visual representation of code execution and data transformations
 - **Interactive Reports**: Generate and export comprehensive research reports
 - **Collaborative Features**: Real-time collaboration on research workflows
-- **Data Lifecycle Visualization**: Interactive view of data through its complete lifecycle
+- **Data Lifecycle Visualization**: Interactive view of data through its complete lifecycle  ✅ **COMPLETED**
 - **Git-like Log View**: Interactive commit history visualization  ✅ **COMPLETED**
 
 #### 🔐 Advanced Security & Access Control

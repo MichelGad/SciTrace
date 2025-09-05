@@ -278,3 +278,18 @@ def create_for_project(project_id):
     return render_template('dataflow/create.html',
                          project=project,
                          user=current_user)
+
+@bp.route('/<int:dataflow_id>/lifecycle')
+@login_required
+def lifecycle_view(dataflow_id):
+    """View the conceptual data lifecycle workflow for a dataflow."""
+    dataflow = Dataflow.query.get_or_404(dataflow_id)
+    
+    # Check if user has access to this dataflow
+    if dataflow.project.admin_id != current_user.id:
+        flash('Access denied', 'error')
+        return redirect(url_for('dataflow.index'))
+    
+    return render_template('dataflow/lifecycle.html',
+                         dataflow=dataflow,
+                         user=current_user)
