@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <p class="text-muted mb-3">Conceptual research workflow showing the data lifecycle for biomedical clinical data analysis</p>
+                            <p class="text-muted mb-3">Conceptual research workflow showing the data lifecycle for environmental water quality research</p>
                             <div id="lifecycle-network" style="height: 600px; border: 1px solid #ddd; border-radius: 4px;"></div>
                         </div>
                     </div>
@@ -137,18 +137,18 @@ function initializeLifecycleView() {
 }
 
 
-// Generate conceptual workflow nodes for biomedical research
+// Generate conceptual workflow nodes for environmental water quality research
 function generateLifecycleNodes() {
     return [
-        {'id': 1, 'label': 'Patient Data Collection', 'group': 'data_collection', 'x': 50, 'y': 100},
-        {'id': 2, 'label': 'Lab Results Processing', 'group': 'data_collection', 'x': 50, 'y': 200},
-        {'id': 3, 'label': 'Imaging Data Analysis', 'group': 'data_collection', 'x': 50, 'y': 300},
-        {'id': 4, 'label': 'Data Preprocessing', 'group': 'processing', 'x': 150, 'y': 150},
-        {'id': 5, 'label': 'Statistical Tests', 'group': 'analysis', 'x': 250, 'y': 150},
-        {'id': 6, 'label': 'Machine Learning Models', 'group': 'analysis', 'x': 250, 'y': 250},
-        {'id': 7, 'label': 'Treatment Outcome Analysis', 'group': 'analysis', 'x': 250, 'y': 350},
-        {'id': 8, 'label': 'Clinical Reports', 'group': 'output', 'x': 350, 'y': 200},
-        {'id': 9, 'label': 'Patient Demographics', 'group': 'visualization', 'x': 350, 'y': 300}
+        {'id': 1, 'label': 'Water Sample Collection', 'group': 'data_collection', 'x': 50, 'y': 100},
+        {'id': 2, 'label': 'Air Quality Monitoring', 'group': 'data_collection', 'x': 50, 'y': 200},
+        {'id': 3, 'label': 'Soil Sample Analysis', 'group': 'data_collection', 'x': 50, 'y': 300},
+        {'id': 4, 'label': 'Data Cleaning & Validation', 'group': 'processing', 'x': 150, 'y': 150},
+        {'id': 5, 'label': 'Statistical Analysis', 'group': 'analysis', 'x': 250, 'y': 150},
+        {'id': 6, 'label': 'Correlation Analysis', 'group': 'analysis', 'x': 250, 'y': 250},
+        {'id': 7, 'label': 'Geographic Visualization', 'group': 'visualization', 'x': 350, 'y': 150},
+        {'id': 8, 'label': 'Trend Analysis', 'group': 'visualization', 'x': 350, 'y': 250},
+        {'id': 9, 'label': 'Final Report', 'group': 'output', 'x': 450, 'y': 200}
     ];
 }
 
@@ -171,8 +171,8 @@ function generateLifecycleEdges(nodes) {
     if (nodes.length >= 6) {
         edges.push({
             'id': edges.length + 1,
-            'from': nodes[1]['id'],  // Lab Results Processing
-            'to': nodes[4]['id'],    // Statistical Tests
+            'from': nodes[1]['id'],  // Air Quality Monitoring
+            'to': nodes[4]['id'],    // Statistical Analysis
             'arrows': 'to',
             'smooth': {'type': 'cubicBezier'},
             'dashes': true
@@ -264,18 +264,18 @@ function getLifecycleNodeColor(group) {
 // Show details for lifecycle nodes
 function showLifecycleNodeDetails(node) {
     const descriptions = {
-        'Patient Data Collection': 'Initial gathering of patient demographic information, medical history, and baseline data.',
-        'Lab Results Processing': 'Processing and validation of laboratory test results including blood work, urine analysis, and other diagnostic tests.',
-        'Imaging Data Analysis': 'Analysis of medical imaging data such as X-rays, MRIs, CT scans, and ultrasound images.',
-        'Data Preprocessing': 'Cleaning, normalization, and preparation of raw data for analysis including handling missing values and outliers.',
-        'Statistical Tests': 'Application of statistical methods to identify patterns, correlations, and significant differences in the data.',
-        'Machine Learning Models': 'Development and training of ML algorithms for pattern recognition, classification, and prediction.',
-        'Treatment Outcome Analysis': 'Evaluation of treatment effectiveness and patient outcomes using statistical and ML methods.',
-        'Clinical Reports': 'Generation of comprehensive medical reports summarizing findings and recommendations.',
-        'Patient Demographics': 'Analysis and visualization of patient population characteristics and demographics.'
+        'Water Sample Collection': 'Collection of water samples from various monitoring sites to measure quality parameters including temperature, pH, turbidity, and chemical composition.',
+        'Air Quality Monitoring': 'Continuous monitoring of atmospheric conditions including particulate matter, gases, and meteorological parameters that affect environmental quality.',
+        'Soil Sample Analysis': 'Analysis of soil samples to assess contamination levels, nutrient content, and physical properties that impact environmental health.',
+        'Data Cleaning & Validation': 'Processing and validation of collected environmental data including quality control checks, outlier detection, and data standardization.',
+        'Statistical Analysis': 'Application of statistical methods to identify patterns, trends, and relationships in environmental data across different parameters and time periods.',
+        'Correlation Analysis': 'Examination of relationships between different environmental parameters to understand how changes in one factor affect others.',
+        'Geographic Visualization': 'Creation of maps and spatial visualizations showing the distribution of environmental parameters across different locations and regions.',
+        'Trend Analysis': 'Analysis of temporal patterns in environmental data to identify long-term trends, seasonal variations, and potential environmental changes.',
+        'Final Report': 'Comprehensive documentation of research findings, including statistical results, visualizations, and recommendations for environmental management.'
     };
     
-    const description = descriptions[node.label] || 'This stage represents a key step in the biomedical research workflow.';
+    const description = descriptions[node.label] || 'This stage represents a key step in the environmental water quality research workflow.';
     alert(`${node.label}\n\n${description}`);
 }
 

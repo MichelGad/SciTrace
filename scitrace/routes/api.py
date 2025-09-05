@@ -153,7 +153,11 @@ def get_stage_files(dataflow_id, stage_name):
         'preprocessing': 'preprocessed',
         'analysis': 'analysis',
         'modeling': 'models',
-        'visualization': 'visualizations'
+        'visualization': 'visualizations',
+        'scripts': 'scripts',
+        'results': 'results',
+        'plots': 'plots',
+        'dataset_root': '.'  # Dataset root maps to the root directory
     }
     
     # Get the actual directory name
@@ -694,32 +698,39 @@ def run_script_with_datalad(dataflow_id):
     command = data.get('command', '')  # The actual command to run
     
     if not script_path:
-        return jsonify({'error': 'No script path provided'}), 400
+        return jsonify({'error': 'No script path provided. Please select a script file to run.'}), 400
     
     if not command:
-        return jsonify({'error': 'No command provided'}), 400
+        return jsonify({'error': 'No command provided. Please enter the command to execute (e.g., python3 scripts/data_cleaning.py input.csv output.csv).'}), 400
     
     try:
         # Get dataset path
         dataset_path = dataflow.project.dataset_path
         if not dataset_path:
-            return jsonify({'error': 'No dataset path found'}), 404
+            return jsonify({'error': 'No dataset path found. The project may not be properly initialized with DataLad.'}), 404
         
         # Construct full script path
         full_script_path = os.path.join(dataset_path, script_path)
         
         # Verify script exists
         if not os.path.exists(full_script_path):
-            return jsonify({'error': f'Script not found: {full_script_path}'}), 404
+            return jsonify({
+                'error': f'Script not found: {script_path}\n\nExpected location: {full_script_path}\n\nPlease check that the script file exists in the dataset.'
+            }), 404
         
         import subprocess
         
         # Build datalad run command
         cmd = ['datalad', 'run', '-m', commit_message]
         
-        # Add input files
+        # Add input files and validate they exist
         for input_file in inputs:
             if input_file.strip():
+                full_input_path = os.path.join(dataset_path, input_file)
+                if not os.path.exists(full_input_path):
+                    return jsonify({
+                        'error': f'Input file not found: {input_file}\n\nExpected location: {full_input_path}\n\nPlease check that all input files exist before running the script.'
+                    }), 404
                 cmd.extend(['-i', input_file])
         
         # Add output files
@@ -743,12 +754,34 @@ def run_script_with_datalad(dataflow_id):
         })
         
     except subprocess.CalledProcessError as e:
+        # Parse the error to provide more helpful messages
+        error_msg = e.stderr if e.stderr else e.stdout if e.stdout else 'Unknown error'
+        
+        # Common error patterns and their explanations
+        if 'Permission denied' in error_msg:
+            detailed_error = f"Permission denied: The script file doesn't have execute permissions. This has been fixed in recent versions - please try running the demo setup again."
+        elif 'No such file or directory' in error_msg:
+            detailed_error = f"File not found: One of the specified files doesn't exist. Check that input files are in the correct location."
+        elif 'command not found' in error_msg:
+            detailed_error = f"Command not found: The command '{command.split()[0] if command else 'unknown'}' is not available. Make sure Python 3 is installed and use 'python3' instead of 'python'."
+        elif 'ModuleNotFoundError' in error_msg:
+            detailed_error = f"Missing dependency: A required Python module is not installed. Check the script's import statements."
+        elif 'SyntaxError' in error_msg:
+            detailed_error = f"Script syntax error: The Python script has a syntax error. Check the script file for typos or missing syntax."
+        else:
+            detailed_error = f"DataLad execution failed: {error_msg}"
+        
         return jsonify({
-            'error': f'DataLad run failed: {e.stderr}',
-            'command': ' '.join(cmd) if 'cmd' in locals() else 'Unknown'
+            'error': detailed_error,
+            'command': ' '.join(cmd) if 'cmd' in locals() else 'Unknown',
+            'raw_error': error_msg,
+            'exit_code': e.returncode
         }), 500
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({
+            'error': f'Unexpected error: {str(e)}',
+            'type': type(e).__name__
+        }), 500
 
 @bp.route('/dataflows/<int:dataflow_id>/restore-file', methods=['POST'])
 @login_required

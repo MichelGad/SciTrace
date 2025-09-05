@@ -95,38 +95,29 @@ A modern web-based platform for managing research data workflows with DataLad in
 
 ## 🎯 Demo Setup
 
-To quickly explore SciTrace with sample data, you can set up a comprehensive demo environment using the new DataLad-based demo system:
+To quickly explore SciTrace with sample data, you can set up a focused demo environment using the DataLad-based demo system:
 
 1. **Start SciTrace**: Run `python run.py` and access the application
 2. **Login**: Use admin/admin123 credentials
 3. **Click "Load Demo Projects"**: Use the button in the dashboard
-4. **Automatic Setup**: The system will create 3 realistic research datasets automatically
+4. **Automatic Setup**: The system will create 1 Environmental Water Quality Research dataset automatically
 
-This creates **3 realistic research datasets** with proper DataLad integration:
+This creates **1 comprehensive Environmental Water Quality Research dataset** with proper DataLad integration:
 
-### 🌊 **Environmental Research Dataset**
-- **Structure**: Water quality, air quality, soil samples
+### 🌊 **Environmental Water Quality Research Dataset**
+- **Structure**: Water quality parameters, environmental monitoring data
 - **Files**: Data cleaning scripts, statistical analysis, visualization tools
 - **Spec**: `datalad create-test-dataset --spec "3-5/2-4" --seed 42`
-
-### 🏥 **Biomedical Research Dataset**
-- **Structure**: Patient records, lab results, clinical data
-- **Files**: Data preprocessing, statistical tests, machine learning scripts
-- **Spec**: `datalad create-test-dataset --spec "4-6/2-3" --seed 123`
-
-### 🤖 **Computational Research Dataset**
-- **Structure**: Training data, validation data, model evaluation
-- **Files**: Model training, hyperparameter tuning, evaluation scripts
-- **Spec**: `datalad create-test-dataset --spec "2-4/3-5" --seed 456`
+- **Focus**: Comprehensive water quality analysis across multiple sampling sites
 
 ### 🚀 **What You Get**
-- **Professional Research Structure**: Realistic directory organization
-- **Sample Scripts**: Python and R scripts for data analysis
+- **Professional Research Structure**: Realistic environmental research directory organization
+- **Sample Scripts**: Python and R scripts for water quality data analysis
 - **DataLad Integration**: Full version control and data lineage tracking
-- **Interactive Visualization**: Ready-to-explore dataflows in SciTrace
-- **Demo Badges**: Clear identification of demo projects throughout the interface
+- **Interactive Visualization**: Ready-to-explore environmental dataflow in SciTrace
+- **Demo Badges**: Clear identification of demo project throughout the interface
 
-The demo datasets are created in `~/scitrace_demo_datasets/` and provide a comprehensive testing environment for all SciTrace features.
+The demo dataset is created in `~/scitrace_demo_datasets/` and provides a comprehensive testing environment for all SciTrace features focused on environmental research.
 
 ## 📖 Usage Guide
 

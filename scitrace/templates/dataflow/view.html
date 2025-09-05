@@ -267,7 +267,7 @@
                         <div class="alert alert-warning">
                             <i class="fas fa-lightbulb me-2"></i>
                             <strong>Example:</strong><br>
-                            <code>python3 analysis/data_processor.py raw_data/sample_data.txt analysis/results.json</code>
+                            <code>python3 scripts/data_cleaning.py raw_data/water_samples.csv results/cleaned_data.csv</code>
                         </div>
                     </div>
                 </div>
@@ -905,12 +905,37 @@ function runScriptWithDataLad() {
                 location.reload();
             }, 1000);
         } else {
-            alert('Error running script: ' + data.error);
+            // Show detailed error message
+            let errorMessage = 'Error running script:\n\n';
+            if (data.error) {
+                errorMessage += data.error;
+            } else {
+                errorMessage += 'Unknown error occurred';
+            }
+            
+            if (data.command) {
+                errorMessage += '\n\nCommand attempted:\n' + data.command;
+            }
+            
+            errorMessage += '\n\nTroubleshooting tips:\n';
+            errorMessage += '• Check that the script path is correct\n';
+            errorMessage += '• Ensure input files exist\n';
+            errorMessage += '• Verify the command syntax\n';
+            errorMessage += '• Make sure the script has execute permissions\n';
+            errorMessage += '• Check that all required dependencies are installed';
+            
+            alert(errorMessage);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error running script');
+        let errorMessage = 'Network error running script:\n\n';
+        errorMessage += 'Failed to communicate with the server.\n\n';
+        errorMessage += 'Please check:\n';
+        errorMessage += '• Your internet connection\n';
+        errorMessage += '• That the server is running\n';
+        errorMessage += '• Browser console for more details';
+        alert(errorMessage);
     })
     .finally(() => {
         // Restore button state

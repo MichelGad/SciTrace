@@ -309,11 +309,11 @@
 
 <script>
 function loadDemoProject() {
-    if (confirm('This will set up 3 demo research projects with DataLad integration:\n\n• Environmental Research (Water Quality)\n• Biomedical Research (Clinical Data)\n• Computational Research (Machine Learning)\n\nContinue?')) {
+    if (confirm('This will set up 1 Environmental Water Quality Research project with DataLad integration:\n\n• Environmental Water Quality Research (Comprehensive water quality analysis)\n\nContinue?')) {
         // Show loading state
         const button = event.target;
         const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading Demo Projects...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading Demo Project...';
         button.disabled = true;
         
         // Make AJAX call to setup demo
@@ -326,7 +326,7 @@ function loadDemoProject() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Demo projects loaded successfully! Created 3 research datasets with DataLad integration. Redirecting to projects...');
+                alert('Demo project loaded successfully! Created 1 Environmental Water Quality Research dataset with DataLad integration. Redirecting to projects...');
                 window.location.href = '/projects';
             } else {
                 alert('Error loading demo: ' + data.error);
