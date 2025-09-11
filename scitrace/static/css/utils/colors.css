@@ -1,0 +1,297 @@
+/**
+ * Color utility classes for SciTrace
+ * 
+ * Provides consistent color schemes and theming utilities.
+ */
+
+/* Primary color variations */
+.text-primary { color: #0d6efd !important; }
+.bg-primary { background-color: #0d6efd !important; }
+.border-primary { border-color: #0d6efd !important; }
+
+.text-primary-light { color: #6ea8fe !important; }
+.bg-primary-light { background-color: #6ea8fe !important; }
+.border-primary-light { border-color: #6ea8fe !important; }
+
+.text-primary-dark { color: #084298 !important; }
+.bg-primary-dark { background-color: #084298 !important; }
+.border-primary-dark { border-color: #084298 !important; }
+
+/* Secondary color variations */
+.text-secondary { color: #6c757d !important; }
+.bg-secondary { background-color: #6c757d !important; }
+.border-secondary { border-color: #6c757d !important; }
+
+.text-secondary-light { color: #adb5bd !important; }
+.bg-secondary-light { background-color: #adb5bd !important; }
+.border-secondary-light { border-color: #adb5bd !important; }
+
+.text-secondary-dark { color: #495057 !important; }
+.bg-secondary-dark { background-color: #495057 !important; }
+.border-secondary-dark { border-color: #495057 !important; }
+
+/* Success color variations */
+.text-success { color: #198754 !important; }
+.bg-success { background-color: #198754 !important; }
+.border-success { border-color: #198754 !important; }
+
+.text-success-light { color: #75b798 !important; }
+.bg-success-light { background-color: #75b798 !important; }
+.border-success-light { border-color: #75b798 !important; }
+
+.text-success-dark { color: #0f5132 !important; }
+.bg-success-dark { background-color: #0f5132 !important; }
+.border-success-dark { border-color: #0f5132 !important; }
+
+/* Danger color variations */
+.text-danger { color: #dc3545 !important; }
+.bg-danger { background-color: #dc3545 !important; }
+.border-danger { border-color: #dc3545 !important; }
+
+.text-danger-light { color: #f1aeb5 !important; }
+.bg-danger-light { background-color: #f1aeb5 !important; }
+.border-danger-light { border-color: #f1aeb5 !important; }
+
+.text-danger-dark { color: #842029 !important; }
+.bg-danger-dark { background-color: #842029 !important; }
+.border-danger-dark { border-color: #842029 !important; }
+
+/* Warning color variations */
+.text-warning { color: #ffc107 !important; }
+.bg-warning { background-color: #ffc107 !important; }
+.border-warning { border-color: #ffc107 !important; }
+
+.text-warning-light { color: #ffda6a !important; }
+.bg-warning-light { background-color: #ffda6a !important; }
+.border-warning-light { border-color: #ffda6a !important; }
+
+.text-warning-dark { color: #664d03 !important; }
+.bg-warning-dark { background-color: #664d03 !important; }
+.border-warning-dark { border-color: #664d03 !important; }
+
+/* Info color variations */
+.text-info { color: #0dcaf0 !important; }
+.bg-info { background-color: #0dcaf0 !important; }
+.border-info { border-color: #0dcaf0 !important; }
+
+.text-info-light { color: #6edff6 !important; }
+.bg-info-light { background-color: #6edff6 !important; }
+.border-info-light { border-color: #6edff6 !important; }
+
+.text-info-dark { color: #055160 !important; }
+.bg-info-dark { background-color: #055160 !important; }
+.border-info-dark { border-color: #055160 !important; }
+
+/* Light color variations */
+.text-light { color: #f8f9fa !important; }
+.bg-light { background-color: #f8f9fa !important; }
+.border-light { border-color: #f8f9fa !important; }
+
+.text-light-dark { color: #e9ecef !important; }
+.bg-light-dark { background-color: #e9ecef !important; }
+.border-light-dark { border-color: #e9ecef !important; }
+
+/* Dark color variations */
+.text-dark { color: #212529 !important; }
+.bg-dark { background-color: #212529 !important; }
+.border-dark { border-color: #212529 !important; }
+
+.text-dark-light { color: #495057 !important; }
+.bg-dark-light { background-color: #495057 !important; }
+.border-dark-light { border-color: #495057 !important; }
+
+/* Neutral colors */
+.text-white { color: #fff !important; }
+.bg-white { background-color: #fff !important; }
+.border-white { border-color: #fff !important; }
+
+.text-black { color: #000 !important; }
+.bg-black { background-color: #000 !important; }
+.border-black { border-color: #000 !important; }
+
+.text-muted { color: #6c757d !important; }
+.bg-muted { background-color: #6c757d !important; }
+.border-muted { border-color: #6c757d !important; }
+
+/* Research-specific colors */
+.text-research { color: #8e44ad !important; }
+.bg-research { background-color: #8e44ad !important; }
+.border-research { border-color: #8e44ad !important; }
+
+.text-research-light { color: #bb8fce !important; }
+.bg-research-light { background-color: #bb8fce !important; }
+.border-research-light { border-color: #bb8fce !important; }
+
+.text-research-dark { color: #5b2c6f !important; }
+.bg-research-dark { background-color: #5b2c6f !important; }
+.border-research-dark { border-color: #5b2c6f !important; }
+
+/* Data-specific colors */
+.text-data { color: #e74c3c !important; }
+.bg-data { background-color: #e74c3c !important; }
+.border-data { border-color: #e74c3c !important; }
+
+.text-data-light { color: #f1948a !important; }
+.bg-data-light { background-color: #f1948a !important; }
+.border-data-light { border-color: #f1948a !important; }
+
+.text-data-dark { color: #a93226 !important; }
+.bg-data-dark { background-color: #a93226 !important; }
+.border-data-dark { border-color: #a93226 !important; }
+
+/* Analysis-specific colors */
+.text-analysis { color: #f39c12 !important; }
+.bg-analysis { background-color: #f39c12 !important; }
+.border-analysis { border-color: #f39c12 !important; }
+
+.text-analysis-light { color: #f7dc6f !important; }
+.bg-analysis-light { background-color: #f7dc6f !important; }
+.border-analysis-light { border-color: #f7dc6f !important; }
+
+.text-analysis-dark { color: #b7950b !important; }
+.bg-analysis-dark { background-color: #b7950b !important; }
+.border-analysis-dark { border-color: #b7950b !important; }
+
+/* Visualization-specific colors */
+.text-visualization { color: #27ae60 !important; }
+.bg-visualization { background-color: #27ae60 !important; }
+.border-visualization { border-color: #27ae60 !important; }
+
+.text-visualization-light { color: #7dcea0 !important; }
+.bg-visualization-light { background-color: #7dcea0 !important; }
+.border-visualization-light { border-color: #7dcea0 !important; }
+
+.text-visualization-dark { color: #1e8449 !important; }
+.bg-visualization-dark { background-color: #1e8449 !important; }
+.border-visualization-dark { border-color: #1e8449 !important; }
+
+/* Background opacity utilities */
+.bg-primary-opacity-10 { background-color: rgba(13, 110, 253, 0.1) !important; }
+.bg-primary-opacity-20 { background-color: rgba(13, 110, 253, 0.2) !important; }
+.bg-primary-opacity-30 { background-color: rgba(13, 110, 253, 0.3) !important; }
+.bg-primary-opacity-50 { background-color: rgba(13, 110, 253, 0.5) !important; }
+
+.bg-success-opacity-10 { background-color: rgba(25, 135, 84, 0.1) !important; }
+.bg-success-opacity-20 { background-color: rgba(25, 135, 84, 0.2) !important; }
+.bg-success-opacity-30 { background-color: rgba(25, 135, 84, 0.3) !important; }
+.bg-success-opacity-50 { background-color: rgba(25, 135, 84, 0.5) !important; }
+
+.bg-danger-opacity-10 { background-color: rgba(220, 53, 69, 0.1) !important; }
+.bg-danger-opacity-20 { background-color: rgba(220, 53, 69, 0.2) !important; }
+.bg-danger-opacity-30 { background-color: rgba(220, 53, 69, 0.3) !important; }
+.bg-danger-opacity-50 { background-color: rgba(220, 53, 69, 0.5) !important; }
+
+.bg-warning-opacity-10 { background-color: rgba(255, 193, 7, 0.1) !important; }
+.bg-warning-opacity-20 { background-color: rgba(255, 193, 7, 0.2) !important; }
+.bg-warning-opacity-30 { background-color: rgba(255, 193, 7, 0.3) !important; }
+.bg-warning-opacity-50 { background-color: rgba(255, 193, 7, 0.5) !important; }
+
+.bg-info-opacity-10 { background-color: rgba(13, 202, 240, 0.1) !important; }
+.bg-info-opacity-20 { background-color: rgba(13, 202, 240, 0.2) !important; }
+.bg-info-opacity-30 { background-color: rgba(13, 202, 240, 0.3) !important; }
+.bg-info-opacity-50 { background-color: rgba(13, 202, 240, 0.5) !important; }
+
+/* Text opacity utilities */
+.text-opacity-25 { color: rgba(33, 37, 41, 0.25) !important; }
+.text-opacity-50 { color: rgba(33, 37, 41, 0.5) !important; }
+.text-opacity-75 { color: rgba(33, 37, 41, 0.75) !important; }
+
+.text-white-opacity-25 { color: rgba(255, 255, 255, 0.25) !important; }
+.text-white-opacity-50 { color: rgba(255, 255, 255, 0.5) !important; }
+.text-white-opacity-75 { color: rgba(255, 255, 255, 0.75) !important; }
+
+/* Gradient backgrounds */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #084298 100%) !important;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #0f5132 100%) !important;
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #842029 100%) !important;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #664d03 100%) !important;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #055160 100%) !important;
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+}
+
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #212529 0%, #000 100%) !important;
+}
+
+.bg-gradient-light {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+}
+
+/* Research workflow colors */
+.bg-raw-data { background-color: #87CEEB !important; }
+.bg-preprocessed { background-color: #90EE90 !important; }
+.bg-analysis { background-color: #FFA07A !important; }
+.bg-modeling { background-color: #DDA0DD !important; }
+.bg-visualization { background-color: #F0E68C !important; }
+.bg-scripts { background-color: #4CAF50 !important; }
+.bg-results { background-color: #FFA07A !important; }
+.bg-plots { background-color: #DDA0DD !important; }
+.bg-dataset-root { background-color: #4CAF50 !important; }
+
+.text-raw-data { color: #4682B4 !important; }
+.text-preprocessed { color: #32CD32 !important; }
+.text-analysis { color: #FF6347 !important; }
+.text-modeling { color: #9370DB !important; }
+.text-visualization { color: #DAA520 !important; }
+.text-scripts { color: #2E7D32 !important; }
+.text-results { color: #FF6347 !important; }
+.text-plots { color: #9370DB !important; }
+.text-dataset-root { color: #2E7D32 !important; }
+
+/* Hover effects */
+.hover-primary:hover { color: #0d6efd !important; }
+.hover-primary-bg:hover { background-color: #0d6efd !important; }
+.hover-primary-border:hover { border-color: #0d6efd !important; }
+
+.hover-success:hover { color: #198754 !important; }
+.hover-success-bg:hover { background-color: #198754 !important; }
+.hover-success-border:hover { border-color: #198754 !important; }
+
+.hover-danger:hover { color: #dc3545 !important; }
+.hover-danger-bg:hover { background-color: #dc3545 !important; }
+.hover-danger-border:hover { border-color: #dc3545 !important; }
+
+.hover-warning:hover { color: #ffc107 !important; }
+.hover-warning-bg:hover { background-color: #ffc107 !important; }
+.hover-warning-border:hover { border-color: #ffc107 !important; }
+
+.hover-info:hover { color: #0dcaf0 !important; }
+.hover-info-bg:hover { background-color: #0dcaf0 !important; }
+.hover-info-border:hover { border-color: #0dcaf0 !important; }
+
+/* Focus states */
+.focus-primary:focus { color: #0d6efd !important; }
+.focus-primary-bg:focus { background-color: #0d6efd !important; }
+.focus-primary-border:focus { border-color: #0d6efd !important; }
+
+.focus-success:focus { color: #198754 !important; }
+.focus-success-bg:focus { background-color: #198754 !important; }
+.focus-success-border:focus { border-color: #198754 !important; }
+
+.focus-danger:focus { color: #dc3545 !important; }
+.focus-danger-bg:focus { background-color: #dc3545 !important; }
+.focus-danger-border:focus { border-color: #dc3545 !important; }
+
+.focus-warning:focus { color: #ffc107 !important; }
+.focus-warning-bg:focus { background-color: #ffc107 !important; }
+.focus-warning-border:focus { border-color: #ffc107 !important; }
+
+.focus-info:focus { color: #0dcaf0 !important; }
+.focus-info-bg:focus { background-color: #0dcaf0 !important; }
+.focus-info-border:focus { border-color: #0dcaf0 !important; }

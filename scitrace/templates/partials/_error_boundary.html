@@ -1,0 +1,80 @@
+<!--
+SciTrace Error Boundary Partial
+
+This partial provides a consistent error display for when components fail to load
+or encounter errors. It can be used as a fallback in templates or as a standalone
+error display.
+
+Usage:
+{% include 'partials/_error_boundary.html' with context %}
+
+Optional context variables:
+- error_message: Custom error message to display
+- error_code: Error code for technical details
+- show_retry: Whether to show retry button (default: true)
+- show_reload: Whether to show reload button (default: true)
+- show_home: Whether to show home button (default: true)
+- show_details: Whether to show technical details (default: false)
+- error_details: Technical error details to display
+-->
+
+<div class="scitrace-error-boundary" id="error-boundary-{{ error_code or 'generic' }}">
+    <div class="scitrace-error-content">
+        <div class="scitrace-error-icon">
+            <i class="fas fa-exclamation-triangle text-warning"></i>
+        </div>
+        <h3 class="scitrace-error-title">Oops! Something went wrong</h3>
+        <p class="scitrace-error-message">
+            {{ error_message or "We encountered an unexpected error. Please try again or contact support if the problem persists." }}
+        </p>
+        
+        {% if show_details and error_details %}
+        <details class="scitrace-error-details">
+            <summary>Technical Details</summary>
+            <pre class="scitrace-error-stack">{{ error_details }}</pre>
+        </details>
+        {% endif %}
+        
+        <div class="scitrace-error-actions">
+            {% if show_retry is not defined or show_retry %}
+            <button type="button" class="scitrace-btn scitrace-btn-primary scitrace-error-retry" onclick="retryOperation()">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+            {% endif %}
+            
+            {% if show_reload is not defined or show_reload %}
+            <button type="button" class="scitrace-btn scitrace-btn-secondary scitrace-error-reload" onclick="window.location.reload()">
+                <i class="fas fa-refresh"></i> Reload Page
+            </button>
+            {% endif %}
+            
+            {% if show_home is not defined or show_home %}
+            <button type="button" class="scitrace-btn scitrace-btn-outline-secondary scitrace-error-home" onclick="window.location.href='/'">
+                <i class="fas fa-home"></i> Go Home
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Error boundary functionality
+function retryOperation() {
+    // This function can be overridden by the parent component
+    // Default behavior is to reload the page
+    if (window.retryOperation) {
+        window.retryOperation();
+    } else {
+        window.location.reload();
+    }
+}
+
+// Initialize error boundary if this is a standalone error display
+document.addEventListener('DOMContentLoaded', function() {
+    const errorBoundary = document.getElementById('error-boundary-{{ error_code or 'generic' }}');
+    if (errorBoundary) {
+        // Add any initialization logic here
+        console.log('Error boundary initialized');
+    }
+});
+</script>

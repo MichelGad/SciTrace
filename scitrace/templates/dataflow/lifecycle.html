@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dataflow.name }} - Data Lifecycle - SciTrace{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vis.min.css') }}">
+<style>
+    .network-container {
+        height: 500px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    
+    .vis-network .vis-node {
+        cursor: pointer !important;
+        transition: all 0.2s ease;
+    }
+    
+    .vis-network .vis-node:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-sitemap text-success fs-1"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">Data Lifecycle: {{ dataflow.name }}</h2>
+                        <p class="text-muted mb-0">Conceptual research workflow and data lifecycle stages</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-folder-tree me-2"></i>Repo View
+                    </a>
+                    <a href="{{ url_for('dataflow.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dataflows
+                    </a>
+                </div>
+            </div>
+
+            <!-- Data Lifecycle View -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-sitemap me-2"></i>Data Lifecycle
+                                </h5>
+                                <button class="btn btn-outline-info btn-sm" onclick="regenerateLifecycle()">
+                                    <i class="fas fa-sync me-1"></i>Regenerate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Conceptual research workflow showing the data lifecycle for environmental water quality research</p>
+                            <div id="lifecycle-network" style="height: 600px; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Data Lifecycle Legend</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="background-color: #87CEEB; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Data Collection & Output</strong></span>
+                                    </div>
+                                    <small class="text-muted">Initial data gathering and final reports</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="background-color: #90EE90; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Processing</strong></span>
+                                    </div>
+                                    <small class="text-muted">Data preparation and cleaning</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="background-color: #FFA07A; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Analysis</strong></span>
+                                    </div>
+                                    <small class="text-muted">Statistical tests and ML models</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="background-color: #DDA0DD; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Visualization</strong></span>
+                                    </div>
+                                    <small class="text-muted">Charts, plots, and demographics</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vis.min.js') }}"></script>
+<script>
+// Initialize the lifecycle visualization when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeLifecycleView();
+});
+
+// Initialize the Data Lifecycle view (conceptual workflow)
+function initializeLifecycleView() {
+    const container = document.getElementById('lifecycle-network');
+    if (!container) return;
+    
+    const nodes = generateLifecycleNodes();
+    const edges = generateLifecycleEdges(nodes);
+    createLifecycleNetwork(container, nodes, edges);
+}
+
+
+// Generate conceptual workflow nodes for environmental water quality research
+function generateLifecycleNodes() {
+    return [
+        {'id': 1, 'label': 'Water Sample Collection', 'group': 'data_collection', 'x': 50, 'y': 100},
+        {'id': 2, 'label': 'Air Quality Monitoring', 'group': 'data_collection', 'x': 50, 'y': 200},
+        {'id': 3, 'label': 'Soil Sample Analysis', 'group': 'data_collection', 'x': 50, 'y': 300},
+        {'id': 4, 'label': 'Data Cleaning & Validation', 'group': 'processing', 'x': 150, 'y': 150},
+        {'id': 5, 'label': 'Statistical Analysis', 'group': 'analysis', 'x': 250, 'y': 150},
+        {'id': 6, 'label': 'Correlation Analysis', 'group': 'analysis', 'x': 250, 'y': 250},
+        {'id': 7, 'label': 'Geographic Visualization', 'group': 'visualization', 'x': 350, 'y': 150},
+        {'id': 8, 'label': 'Trend Analysis', 'group': 'visualization', 'x': 350, 'y': 250},
+        {'id': 9, 'label': 'Final Report', 'group': 'output', 'x': 450, 'y': 200}
+    ];
+}
+
+// Generate edges for the conceptual workflow
+function generateLifecycleEdges(nodes) {
+    const edges = [];
+    
+    // Create sequential flow
+    for (let i = 0; i < nodes.length - 1; i++) {
+        edges.push({
+            'id': i + 1,
+            'from': nodes[i]['id'],
+            'to': nodes[i + 1]['id'],
+            'arrows': 'to',
+            'smooth': {'type': 'cubicBezier'}
+        });
+    }
+    
+    // Add cross-connections for realism
+    if (nodes.length >= 6) {
+        edges.push({
+            'id': edges.length + 1,
+            'from': nodes[1]['id'],  // Air Quality Monitoring
+            'to': nodes[4]['id'],    // Statistical Analysis
+            'arrows': 'to',
+            'smooth': {'type': 'cubicBezier'},
+            'dashes': true
+        });
+    }
+    
+    return edges;
+}
+
+// Create the lifecycle network visualization
+function createLifecycleNetwork(container, nodes, edges) {
+    const nodesDataset = new vis.DataSet(nodes.map(node => ({
+        id: node.id,
+        label: node.label,
+        title: `Click to view details for ${node.label}`,
+        color: getLifecycleNodeColor(node.group),
+        shape: 'box',
+        size: 20,
+        font: { size: 10, color: '#333' },
+        borderWidth: 2,
+        borderColor: '#666',
+        x: node.x,
+        y: node.y
+    })));
+    
+    const edgesDataset = new vis.DataSet(edges.map(edge => ({
+        from: edge.from,
+        to: edge.to,
+        arrows: edge.arrows || 'to',
+        color: '#666',
+        smooth: edge.smooth,
+        dashes: edge.dashes || false
+    })));
+    
+    const options = {
+        nodes: {
+            font: { size: 10 },
+            borderWidth: 2,
+            shadow: true,
+            shape: 'box',
+            widthConstraint: { minimum: 60, maximum: 100 },
+            heightConstraint: { minimum: 30, maximum: 50 }
+        },
+        edges: {
+            width: 1,
+            shadow: false,
+            smooth: { type: 'cubicBezier' }
+        },
+        physics: { enabled: false },
+        interaction: { hover: true, tooltipDelay: 200 }
+    };
+    
+    try {
+        const network = new vis.Network(container, {
+            nodes: nodesDataset,
+            edges: edgesDataset
+        }, options);
+        
+        network.on('click', function(params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = nodes.find(n => n.id === nodeId);
+                if (node) {
+                    showLifecycleNodeDetails(node);
+                }
+            }
+        });
+        
+        console.log('Lifecycle network created successfully');
+    } catch (error) {
+        console.error('Error creating lifecycle network:', error);
+        container.innerHTML = '<div class="text-center p-4"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-3"></i><p class="text-muted">Error creating lifecycle visualization</p></div>';
+    }
+}
+
+
+// Get color for lifecycle nodes based on group
+function getLifecycleNodeColor(group) {
+    const colors = {
+        'data_collection': '#87CEEB',
+        'processing': '#90EE90',
+        'analysis': '#FFA07A',
+        'visualization': '#DDA0DD',
+        'output': '#87CEEB'
+    };
+    return colors[group] || '#4CAF50';
+}
+
+// Show details for lifecycle nodes
+function showLifecycleNodeDetails(node) {
+    const descriptions = {
+        'Water Sample Collection': 'Collection of water samples from various monitoring sites to measure quality parameters including temperature, pH, turbidity, and chemical composition.',
+        'Air Quality Monitoring': 'Continuous monitoring of atmospheric conditions including particulate matter, gases, and meteorological parameters that affect environmental quality.',
+        'Soil Sample Analysis': 'Analysis of soil samples to assess contamination levels, nutrient content, and physical properties that impact environmental health.',
+        'Data Cleaning & Validation': 'Processing and validation of collected environmental data including quality control checks, outlier detection, and data standardization.',
+        'Statistical Analysis': 'Application of statistical methods to identify patterns, trends, and relationships in environmental data across different parameters and time periods.',
+        'Correlation Analysis': 'Examination of relationships between different environmental parameters to understand how changes in one factor affect others.',
+        'Geographic Visualization': 'Creation of maps and spatial visualizations showing the distribution of environmental parameters across different locations and regions.',
+        'Trend Analysis': 'Analysis of temporal patterns in environmental data to identify long-term trends, seasonal variations, and potential environmental changes.',
+        'Final Report': 'Comprehensive documentation of research findings, including statistical results, visualizations, and recommendations for environmental management.'
+    };
+    
+    const description = descriptions[node.label] || 'This stage represents a key step in the environmental water quality research workflow.';
+    alert(`${node.label}\n\n${description}`);
+}
+
+
+// Function to regenerate the lifecycle view
+function regenerateLifecycle() {
+    if (confirm('This will regenerate the conceptual workflow lifecycle. Continue?')) {
+        initializeLifecycleView();
+    }
+}
+
+</script>
+{% endblock %}

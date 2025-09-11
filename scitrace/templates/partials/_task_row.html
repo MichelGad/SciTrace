@@ -1,0 +1,58 @@
+<!-- Task Row Partial -->
+<tr data-status="{{ task.status }}" data-priority="{{ task.priority }}" data-project="{{ task.project_id }}">
+    <td>
+        <div>
+            <a href="{{ url_for('tasks.view', task_id=task.id) }}" class="fw-medium text-decoration-none">
+                {{ task.title }}
+            </a>
+            {% if task.description %}
+            <small class="text-muted d-block">{{ task.description[:50] }}{% if task.description|length > 50 %}...{% endif %}</small>
+            {% endif %}
+        </div>
+    </td>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('projects.view', project_id=task.project_id) }}" class="text-decoration-none">
+                {{ task.project.name if task.project else 'Unknown Project' }}
+            </a>
+            {% if "Demo" in task.project.name or "Research" in task.project.name %}
+            <span class="badge bg-warning">Demo</span>
+            {% endif %}
+        </div>
+    </td>
+    <td>
+        <span class="badge badge-{{ task.priority }}">
+            {{ task.priority.title() }}
+        </span>
+    </td>
+    <td>
+        <span class="badge badge-{{ task.status }}">
+            {{ task.status.title() }}
+        </span>
+    </td>
+    <td>
+        {% if task.deadline %}
+        <span class="{% if task.deadline < now %}text-danger{% endif %}">
+            {{ task.deadline.strftime('%Y-%m-%d') }}
+        </span>
+        {% else %}
+        <span class="text-muted">No deadline</span>
+        {% endif %}
+    </td>
+    <td>
+        <small class="text-muted">{{ task.created_at.strftime('%Y-%m-%d') }}</small>
+    </td>
+    <td>
+        <div class="btn-group btn-group-sm">
+            <a href="{{ url_for('tasks.view', task_id=task.id) }}" class="btn btn-outline-primary" title="View">
+                <i class="fas fa-eye"></i>
+            </a>
+            <a href="{{ url_for('tasks.edit', task_id=task.id) }}" class="btn btn-outline-secondary" title="Edit">
+                <i class="fas fa-edit"></i>
+            </a>
+            <button class="btn btn-outline-danger" title="Delete" onclick="deleteTask({{ task.id }})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </td>
+</tr>

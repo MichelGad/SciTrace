@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SciTrace{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --info-color: #0891b2;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            bottom: 20px;
+            width: 280px;
+            background: linear-gradient(180deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .sidebar .nav-link {
+            color: var(--gray-300);
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.75rem;
+            margin: 0.25rem 0;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .sidebar .nav-link:hover {
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(2px);
+        }
+        
+        .sidebar .nav-link.active {
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .sidebar .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1.5rem;
+            background: var(--primary-color);
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            margin-left: 320px;
+            padding: 20px;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--white) !important;
+            font-size: 1.75rem;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .navbar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .navbar-brand .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .navbar-brand .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .navbar-brand .brand-text {
+            background: linear-gradient(135deg, var(--white) 0%, rgba(255, 255, 255, 0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .top-navbar {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(8px);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: var(--shadow);
+            background-color: var(--white);
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .hover-lift:hover .card {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stats-card .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .stats-card .text-success {
+            color: var(--success-color) !important;
+        }
+        
+        .stats-card .text-warning {
+            color: var(--warning-color) !important;
+        }
+        
+        .stats-card .text-info {
+            color: var(--info-color) !important;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-success {
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning {
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning:hover {
+            background-color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info {
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-info {
+            color: white !important;
+        }
+        
+        .btn-info:hover {
+            color: white !important;
+        }
+        
+        .btn-warning {
+            color: white !important;
+        }
+        
+        .btn-warning:hover {
+            color: white !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
+        /* Fix all button visibility issues across the web app */
+        .btn-outline-success {
+            color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-warning {
+            color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+        }
+        
+        .btn-outline-warning:hover {
+            background-color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-info {
+            color: var(--info-color) !important;
+            border-color: var(--info-color) !important;
+        }
+        
+        .btn-outline-secondary {
+            color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+            color: white !important;
+        }
+        
+        .btn-outline-danger {
+            color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+            color: white !important;
+        }
+        
+        /* Ensure all solid buttons have white text */
+        .btn-primary, .btn-success, .btn-warning, .btn-info, .btn-secondary, .btn-danger {
+            color: white !important;
+        }
+        
+        .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-info:hover, .btn-secondary:hover, .btn-danger:hover {
+            color: white !important;
+        }
+        
+        /* Fix badge visibility issues */
+        .badge {
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .badge.badge-pending, .badge.badge-ongoing, .badge.badge-done {
+            color: white !important;
+        }
+        
+        .badge.badge-low, .badge.badge-medium, .badge.badge-urgent {
+            color: white !important;
+        }
+        
+        /* Ensure proper badge background colors */
+        .badge.badge-pending {
+            background-color: var(--secondary-color) !important;
+        }
+        
+        .badge.badge-ongoing {
+            background-color: var(--warning-color) !important;
+        }
+        
+        .badge.badge-done {
+            background-color: var(--success-color) !important;
+        }
+        
+        .badge.badge-low {
+            background-color: var(--success-color) !important;
+        }
+        
+        .badge.badge-medium {
+            background-color: var(--warning-color) !important;
+        }
+        
+        .badge.badge-urgent {
+            background-color: var(--danger-color) !important;
+        }
+        
+        .stats-card .btn {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .stats-card .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .search-box {
+            background-color: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background-color: var(--white);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .notification-bell:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #ef4444 100%);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .badge {
+            border-radius: 0.375rem;
+            font-weight: 500;
+            padding: 0.375rem 0.75rem;
+        }
+        
+        .form-control {
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-300);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            z-index: 9999;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 200px;
+            margin-top: 0.5rem;
+        }
+        
+        .dropdown-item {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-50);
+        }
+        
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+        
+        /* Sidebar specific scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Fix modal z-index to appear above sidebar */
+        .modal {
+            z-index: 1055 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+    </style>
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="px-4 pt-4 pb-4">
+            <div class="mb-4">
+                <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="white">
+                            <path d="M17 17h5.142a4 4 0 1 0 0-2H17V7h5.142a4 4 0 1 0 0-2H17a2 2 0 0 0-2 2v8H9.858a4 4 0 1 0 0 2H15v8a2 2 0 0 0 2 2h5.142a4 4 0 1 0 0-2H17Zm9-3a2 2 0 1 1-2 2a2 2 0 0 1 2-2m0-10a2 2 0 1 1-2 2a2 2 0 0 1 2-2M6 18a2 2 0 1 1 2-2a2 2 0 0 1-2 2m20 6a2 2 0 1 1-2 2a2 2 0 0 1 2-2"/>
+                        </svg>
+                    </div>
+                    <span class="brand-text">SciTrace</span>
+                </a>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}" 
+                       href="{{ url_for('dashboard.index') }}">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint.startswith('projects.') %}active{% endif %}" 
+                       href="{{ url_for('projects.index') }}">
+                        <i class="fas fa-folder"></i>
+                        Projects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint.startswith('dataflow.') %}active{% endif %}" 
+                       href="{{ url_for('dataflow.index') }}">
+                        <i class="fas fa-share-alt"></i>
+                        Dataflows
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint.startswith('tasks.') %}active{% endif %}" 
+                       href="{{ url_for('tasks.index') }}">
+                        <i class="fas fa-tasks"></i>
+                        Tasks
+                    </a>
+                </li>
+            </ul>
+            
+            <hr class="my-3" style="border-color: rgba(255, 255, 255, 0.2);">
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main-content">
+                <!-- Top navbar -->
+                <nav class="navbar navbar-expand-lg navbar-light top-navbar mb-4">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center">
+                            <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            
+                            <div class="d-flex align-items-center me-3">
+                                <button class="btn btn-outline-secondary btn-sm me-2">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm me-3">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="search-box me-3">
+                                <input type="text" class="form-control border-0 bg-transparent" placeholder="Search..." style="width: 300px;">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex align-items-center">
+                            {% if current_user.is_authenticated %}
+                            <div class="notification-bell me-3">
+                                <i class="fas fa-bell fa-lg text-muted"></i>
+                                <span class="notification-badge">3</span>
+                            </div>
+                            
+                            <!-- Shutdown Button -->
+                            <button class="btn btn-outline-danger btn-sm me-3" 
+                                    onclick="shutdownFlask()" 
+                                    title="Shutdown Flask Application">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                            
+                            <div class="user-profile dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" 
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-avatar me-2">
+                                        {{ current_user.name[0] }}
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">{{ current_user.name }}</span>
+                                        <small class="text-muted">{{ current_user.role.title() }}</small>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="resetAllDataFromDropdown()"><i class="fas fa-trash me-2"></i>Reset All Data</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Page content -->
+                {% block content %}{% endblock %}
+            </main>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block scripts %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+    function resetAllDataFromDropdown() {
+        if (confirm('This will permanently delete ALL your projects, tasks, and dataflows. This action cannot be undone. Are you sure you want to continue?')) {
+            // Show loading state
+            const dropdownItem = event.target;
+            const originalText = dropdownItem.innerHTML;
+            dropdownItem.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Resetting...';
+            dropdownItem.style.pointerEvents = 'none';
+            
+            // Make AJAX call to reset all data
+            fetch('/api/reset-all-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('All data has been reset successfully! Redirecting to dashboard.');
+                    window.location.href = '{{ url_for("dashboard.index") }}';
+                } else {
+                    alert('Error resetting data: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error resetting data');
+            })
+            .finally(() => {
+                // Restore button state
+                dropdownItem.innerHTML = originalText;
+                dropdownItem.style.pointerEvents = 'auto';
+            });
+        }
+    }
+    
+    function shutdownFlask() {
+        if (confirm('Are you sure you want to shutdown the Flask application? This will stop the server.')) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            // Make AJAX call to shutdown
+            fetch('{{ url_for("auth.shutdown") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Flask application shutdown initiated. The server will stop shortly.');
+                    // The page will become unresponsive as the server shuts down
+                } else {
+                    alert('Error shutting down: ' + data.message);
+                    // Restore button state
+                    button.innerHTML = originalHTML;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Check if this is a network error (server shutdown) or a real error
+                const isNetworkError = (
+                    error.name === 'TypeError' && 
+                    (error.message.includes('fetch') || 
+                     error.message.includes('Load failed') ||
+                     error.message.includes('Failed to fetch') ||
+                     error.message.includes('NetworkError') ||
+                     error.message.includes('Connection aborted') ||
+                     error.message.includes('Remote end closed') ||
+                     error.message.includes('connection') ||
+                     error.message.includes('network'))) ||
+                    error.name === 'NetworkError' ||
+                    error.code === 'NETWORK_ERROR';
+                
+                if (isNetworkError) {
+                    // This is likely a network error due to server shutdown
+                    alert('Flask application shutdown initiated. The server will stop shortly.');
+                } else {
+                    alert('Error shutting down the application: ' + error.message);
+                    // Restore button state
+                    button.innerHTML = originalHTML;
+                    button.disabled = false;
+                }
+            });
+        }
+    }
+    </script>
+</body>
+</html>

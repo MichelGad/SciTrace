@@ -1,0 +1,118 @@
+<!--
+SciTrace Form Error Partial
+
+This partial provides a consistent error display for form validation errors
+and submission errors. It can be used to display both individual field errors
+and general form errors.
+
+Usage:
+{% include 'partials/_form_error.html' with context %}
+
+Optional context variables:
+- error_message: Main error message to display
+- error_list: List of specific error messages
+- error_type: Type of error (validation, submission, etc.)
+- show_details: Whether to show detailed error list (default: true)
+-->
+
+{% if error_message or error_list %}
+<div class="scitrace-form-error" id="form-error-{{ error_type or 'generic' }}">
+    <i class="fas fa-exclamation-triangle"></i>
+    
+    {% if error_message %}
+    <strong>{{ error_message }}</strong>
+    {% endif %}
+    
+    {% if error_list and show_details is not defined or show_details %}
+    <ul class="scitrace-form-error-list">
+        {% for error in error_list %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endif %}
+
+<!--
+Field Error Partial
+
+This partial provides a consistent error display for individual form fields.
+It should be placed after the form field element.
+
+Usage:
+{% include 'partials/_form_error.html' with context %}
+
+Optional context variables:
+- field_name: Name of the field with error
+- field_error: Error message for the field
+- field_id: ID of the field (for JavaScript targeting)
+-->
+
+{% if field_error %}
+<div class="scitrace-field-error-message" id="field-error-{{ field_name or field_id or 'generic' }}">
+    <i class="fas fa-exclamation-circle"></i>
+    {{ field_error }}
+</div>
+
+<script>
+// Add error class to the field
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldId = '{{ field_id or field_name or 'generic' }}';
+    const field = document.getElementById(fieldId) || document.querySelector(`[name="${fieldId}"]`);
+    
+    if (field) {
+        field.classList.add('scitrace-field-error');
+        
+        // Remove error class when field is focused or changed
+        field.addEventListener('focus', function() {
+            this.classList.remove('scitrace-field-error');
+        });
+        
+        field.addEventListener('input', function() {
+            this.classList.remove('scitrace-field-error');
+        });
+    }
+});
+</script>
+{% endif %}
+
+<!--
+Network Error Partial
+
+This partial provides a consistent error display for network-related errors
+during form submission.
+
+Usage:
+{% include 'partials/_form_error.html' with context %}
+
+Optional context variables:
+- network_error: Network error message
+- show_retry: Whether to show retry button (default: true)
+-->
+
+{% if network_error %}
+<div class="scitrace-network-error" id="network-error-{{ error_type or 'generic' }}">
+    <i class="fas fa-wifi"></i>
+    <h5>Network Error</h5>
+    <p>{{ network_error }}</p>
+    
+    {% if show_retry is not defined or show_retry %}
+    <button type="button" class="scitrace-btn scitrace-btn-warning" onclick="retryFormSubmission()">
+        <i class="fas fa-redo"></i> Try Again
+    </button>
+    {% endif %}
+</div>
+
+<script>
+// Default retry function for form submission
+function retryFormSubmission() {
+    // This function can be overridden by the parent component
+    if (window.retryFormSubmission) {
+        window.retryFormSubmission();
+    } else {
+        // Default behavior is to reload the page
+        window.location.reload();
+    }
+}
+</script>
+{% endif %}

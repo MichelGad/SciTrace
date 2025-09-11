@@ -1,0 +1,1341 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    /* Main Layout */
+    
+
+    
+    /* Top Panel: Git Commit History List */
+    .commit-history-panel {
+        background: #ffffff;
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .commit-row {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f6f8fa;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        margin: 0 8px;
+        border-radius: 8px;
+    }
+    
+    .commit-row:hover {
+        background-color: #f6f8fa;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .commit-row.selected {
+        background-color: #0366d6;
+        color: white;
+        box-shadow: 0 2px 8px rgba(3, 102, 214, 0.3);
+    }
+    
+    .commit-row.selected .commit-hash,
+    .commit-row.selected .commit-message {
+        color: white;
+    }
+    
+    /* Git Graph Visualization */
+    .git-graph {
+        display: flex;
+        align-items: center;
+        margin-right: 16px;
+        min-width: 120px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 12px;
+        color: #586069;
+    }
+    
+    .graph-line {
+        display: inline-block;
+        width: 2px;
+        height: 16px;
+        background: #e1e4e8;
+        margin: 0 2px;
+    }
+    
+    .graph-node {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #586069;
+        margin: 0 2px;
+    }
+    
+    .graph-node.current {
+        background: #0366d6;
+    }
+    
+    .graph-branch {
+        display: inline-block;
+        width: 12px;
+        height: 2px;
+        background: #586069;
+        margin: 0 2px;
+    }
+    
+    /* Commit Details */
+    .commit-details {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .commit-author-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #e1e4e8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #586069;
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .commit-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .commit-message {
+        font-weight: 500;
+        color: #24292e;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .commit-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #586069;
+    }
+    
+    .commit-author {
+        font-weight: 500;
+    }
+    
+    .commit-hash {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        color: #0366d6;
+        background: #f1f8ff;
+        padding: 3px 8px;
+        border-radius: 6px;
+        box-shadow: 0 1px 2px rgba(3, 102, 214, 0.1);
+    }
+    
+    .commit-timestamp {
+        color: #586069;
+    }
+    
+    .commit-branch-label {
+        background: #f1f8ff;
+        color: #0366d6;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(3, 102, 214, 0.1);
+    }
+    
+    /* Bottom Panel: Detailed Commit Information */
+    .commit-detail-panel {
+        background: #ffffff;
+        border: none;
+        border-radius: 12px;
+        min-height: 300px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+
+    
+    /* Single Tab Content */
+    .tab-content {
+        padding: 28px;
+        display: block;
+    }
+    
+    .commit-info-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .commit-info-line {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+    }
+    
+    .commit-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e1e4e8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #586069;
+        font-size: 16px;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+    
+    .commit-author-name {
+        font-weight: 600;
+        color: #24292e;
+        font-size: 14px;
+    }
+    
+    .commit-hash {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        color: #586069;
+        font-size: 13px;
+        background: #f6f8fa;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    
+    .commit-date {
+        color: #586069;
+        font-size: 13px;
+    }
+    
+    .commit-message {
+        font-weight: 600;
+        color: #24292e;
+        font-size: 14px;
+        flex: 1;
+    }
+    
+    /* Action Buttons */
+    .commit-actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    
+    .action-btn {
+        padding: 10px 18px;
+        border: 1px solid #d1d5da;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #24292e;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-btn:hover {
+        background: #f6f8fa;
+        border-color: #c6cbd1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+
+    
+    .action-btn.danger {
+        background: #d73a49;
+        color: white;
+        border-color: #d73a49;
+        box-shadow: 0 1px 3px rgba(215, 58, 73, 0.3);
+    }
+    
+    .action-btn.danger:hover {
+        background: #cb2431;
+        border-color: #cb2431;
+        box-shadow: 0 4px 8px rgba(215, 58, 73, 0.4);
+    }
+    
+    /* Changes Tab Content */
+    .changes-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e1e4e8;
+    }
+    
+
+    
+    .commit-info-line {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 14px;
+        color: #586069;
+        background: #f6f8fa;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #e1e4e8;
+    }
+    
+    .changes-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .changes-actions .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .changes-content {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        height: 500px;
+        margin-top: 20px;
+    }
+    
+    .file-tree-panel {
+        background: #ffffff;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .file-tree-header {
+        padding: 12px 16px;
+        background: #f6f8fa;
+        border-bottom: 1px solid #e1e4e8;
+    }
+    
+    .file-tree-header h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #24292e;
+    }
+    
+    .file-tree {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 0;
+    }
+    
+    .file-tree-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 13px;
+        color: #24292e;
+    }
+    
+    .file-tree-item:hover {
+        background: #f6f8fa;
+    }
+    
+    .file-tree-item.selected {
+        background: #0366d6;
+        color: white;
+    }
+    
+    .file-tree-item.selected .file-path {
+        color: white;
+    }
+    
+    .file-tree-item.selected .file-status {
+        box-shadow: 0 1px 3px rgba(255, 255, 255, 0.3);
+    }
+    
+    .file-tree-icon {
+        width: 16px;
+        text-align: center;
+        color: #586069;
+    }
+    
+    .file-tree-item.selected .file-tree-icon {
+        color: white;
+    }
+    
+    .diff-panel {
+        background: #ffffff;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    .diff-header {
+        padding: 12px 16px;
+        background: #f6f8fa;
+        border-bottom: 1px solid #e1e4e8;
+    }
+    
+    .file-path-display {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+        color: #24292e;
+        font-weight: 500;
+        word-break: break-all;
+    }
+    
+    .diff-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        background: #fafbfc;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+    
+    .diff-line {
+        padding: 2px 0;
+        border-radius: 3px;
+    }
+    
+    .diff-line.removed {
+        background: #ffeef0;
+        color: #d73a49;
+    }
+    
+    .diff-line.added {
+        background: #e6ffed;
+        color: #28a745;
+    }
+    
+    .diff-line.context {
+        background: #f6f8fa;
+        color: #586069;
+    }
+    
+    .diff-header-line {
+        color: #586069;
+        font-weight: 500;
+        margin-bottom: 8px;
+        padding: 4px 8px;
+        background: #e1e4e8;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #0366d6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .file-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .file-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        margin: 2px 0;
+    }
+    
+    .file-item:hover {
+        background: #f6f8fa;
+        transform: translateX(4px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    
+    .file-status {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .file-status.added {
+        background: #28a745;
+    }
+    
+    .file-status.modified {
+        background: #ffc107;
+    }
+    
+    .file-status.deleted {
+        background: #dc3545;
+    }
+    
+    .file-path {
+        font-family: 'Monaco', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+        color: #24292e;
+    }
+    
+    /* File Tree Tab Content */
+    .file-tree {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+        color: #24292e;
+    }
+    
+    .tree-item {
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .tree-icon {
+        width: 16px;
+        text-align: center;
+        color: #586069;
+    }
+    
+    /* Loading States */
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #e1e4e8;
+        border-radius: 50%;
+        border-top-color: #0366d6;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .no-commits {
+        text-align: center;
+        padding: 40px 20px;
+        color: #586069;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .git-log-header {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+        
+        .commit-details {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .commit-info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .commit-actions {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <i class="fas fa-code-branch text-warning fs-1" style="color: #f05032 !important;"></i>
+            </div>
+            <div>
+                <h2 class="fw-bold mb-1">Git Log: {{ dataflow.name }}</h2>
+                <p class="text-muted mb-0">View commit history and manage version control</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary">
+                <i class="fas fa-folder-tree me-2"></i>Repo View
+            </a>
+            <a href="{{ url_for('dataflow.index') }}" class="btn btn-outline-info">
+                <i class="fas fa-list me-1"></i>All Dataflows
+            </a>
+        </div>
+    </div>
+    
+    <!-- Top Panel: Git Commit History List -->
+    <div class="commit-history-panel" id="commit-history-panel">
+        <div class="text-center p-4">
+            <div class="loading-spinner"></div>
+            <span>Loading commit history...</span>
+        </div>
+    </div>
+    
+    <!-- Bottom Panel: Detailed Commit Information -->
+    <div class="commit-detail-panel" id="commit-detail-panel" style="display: none;">
+                <!-- Single Tab Content -->
+        <div id="commit-tab" class="tab-content">
+            <!-- Commit Information Section -->
+            <div class="commit-info-header">
+                <div class="commit-info-line">
+                    <div class="commit-avatar" id="commit-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="commit-author-name" id="commit-author-name"></span>
+                    <span class="commit-hash" id="commit-hash"></span>
+                    <span class="commit-date" id="commit-date"></span>
+                    <span class="commit-message" id="commit-message"></span>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="commit-actions">
+                    <button class="action-btn" onclick="copyToClipboard(currentCommitHash)">
+                        <i class="fas fa-copy"></i>Copy Hash
+                    </button>
+                    <button class="action-btn danger" onclick="showRevertDialog(currentCommitHash)">
+                        <i class="fas fa-undo"></i>Revert
+                    </button>
+                </div>
+            </div>
+            
+            <!-- File Changes Section -->
+            <div class="changes-content">
+                <!-- Left Panel: File Tree -->
+                <div class="file-tree-panel">
+                    <div class="file-tree-header">
+                        <h6 class="mb-2">Files Changed</h6>
+                    </div>
+                    <div class="file-tree" id="file-tree">
+                        <!-- File tree will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Right Panel: Diff View -->
+                <div class="diff-panel">
+                    <div class="diff-header">
+                        <div class="file-path-display" id="diff-file-path">
+                            <!-- Selected file path will be shown here -->
+                        </div>
+                    </div>
+                    <div class="diff-content" id="diff-content">
+                        <!-- Diff content will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals and Dialogs -->
+
+<div class="modal fade" id="revertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Revert Commit</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to revert this commit? This will create a new commit that undoes the changes.</p>
+            <p><strong>Commit:</strong> <span id="revert-commit-hash"></span></p>
+            <div class="mb-3">
+                <label for="revertMessage" class="form-label">Revert Message (optional):</label>
+                <input type="text" class="form-control" id="revertMessage" placeholder="Enter custom revert message">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="revertCommit()">Revert</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+let currentLimit = 20;
+let isLoading = false;
+let hasMoreCommits = true;
+let currentCommitHash = null;
+let currentCommit = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Git Log page loaded');
+    console.log('Dataflow ID:', '{{ dataflow.id }}');
+    console.log('Current user:', '{{ current_user.name if current_user.is_authenticated else "Not authenticated" }}');
+    
+    // Check if required elements exist
+    const requiredElements = [
+        'commit-history-panel',
+        'commit-detail-panel',
+        'commit-avatar',
+        'commit-author-name',
+        'commit-hash',
+        'commit-date',
+        'commit-message',
+        'file-tree',
+        'diff-file-path',
+        'diff-content'
+    ];
+    
+    const missingElements = requiredElements.filter(id => !document.getElementById(id));
+    if (missingElements.length > 0) {
+        console.warn('Missing required elements:', missingElements);
+    } else {
+        console.log('All required elements found');
+    }
+    
+    // Load commits
+    loadCommits();
+});
+
+function loadCommits(append = false) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    const container = document.getElementById('commit-history-panel');
+    
+    if (!container) {
+        console.error('Commit history panel not found');
+        isLoading = false;
+        return;
+    }
+    
+    if (!append) {
+        container.innerHTML = `
+            <div class="text-center p-4">
+                <div class="loading-spinner"></div>
+                <span>Loading commit history...</span>
+            </div>
+        `;
+    }
+    
+    fetch(`/api/dataflows/{{ dataflow.id }}/git-tree?limit=${currentLimit}`)
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON. You may need to log in first.');
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            
+            if (data.success) {
+                if (append) {
+                    appendCommits(data.commits);
+                } else {
+                    displayCommits(data.commits);
+                }
+                
+                // First commit will be selected automatically in displayCommits
+            } else {
+                showError(data.error || 'Failed to load commits');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading commits:', error);
+            
+            if (error.message.includes('not JSON')) {
+                showError('Authentication required. Please log in to view commit history.');
+            } else if (error.message.includes('HTTP 403')) {
+                showError('Access denied. You do not have permission to view this dataflow.');
+            } else if (error.message.includes('HTTP 404')) {
+                showError('Dataflow not found. Please check the URL.');
+            } else {
+                showError(`Failed to load commit history: ${error.message}`);
+            }
+        })
+        .finally(() => {
+            isLoading = false;
+        });
+}
+
+function displayCommits(commits) {
+    const container = document.getElementById('commit-history-panel');
+    
+    if (!container) {
+        console.error('Commit history panel not found');
+        return;
+    }
+    
+    // Store commits globally for access by other functions
+    window.storedCommits = commits;
+    
+    if (commits.length === 0) {
+        container.innerHTML = `
+            <div class="no-commits">
+                <i class="fas fa-git-alt" style="font-size: 48px; color: #e1e4e8; margin-bottom: 20px;"></i>
+                <h4>No Commits Found</h4>
+                <p>This dataset doesn't have any commit history yet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    commits.forEach((commit, index) => {
+        html += createCommitRow(commit, index === 0);
+    });
+    
+    container.innerHTML = html;
+    
+    // Add click event listeners
+    addCommitClickListeners();
+    
+    // Select first commit by default
+    if (commits.length > 0) {
+        selectCommit(commits[0]);
+    }
+}
+
+function appendCommits(commits) {
+    const container = document.getElementById('commit-history-panel');
+    
+    if (!container) {
+        console.error('Commit history panel not found');
+        return;
+    }
+    
+    let html = '';
+    
+    commits.forEach(commit => {
+        html += createCommitRow(commit, false);
+    });
+    
+    container.insertAdjacentHTML('beforeend', html);
+    
+    // Add click event listeners for new commits
+    addCommitClickListeners();
+}
+
+function createCommitRow(commit, isLatest) {
+    const graphHtml = createGraphVisualization(commit.graph_chars);
+    const branchLabel = commit.refs && commit.refs.current_branch ? 
+        `<span class="commit-branch-label">${commit.refs.current_branch}</span>` : '';
+    
+    return `
+        <div class="commit-row" data-commit-hash="${commit.short_hash}" onclick="selectCommit('${commit.short_hash}')">
+            <div class="git-graph">
+                ${graphHtml}
+            </div>
+            <div class="commit-details">
+                <div class="commit-author-avatar">
+                    ${commit.author_name.charAt(0).toUpperCase()}
+                </div>
+                <div class="commit-info">
+                    <div class="commit-message">${commit.message}</div>
+                    <div class="commit-meta">
+                        <span class="commit-author">${commit.author_name}</span>
+                        <span class="commit-hash">${commit.short_hash}</span>
+                        <span class="commit-timestamp">${commit.relative_date}</span>
+                        ${branchLabel}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createGraphVisualization(graphChars) {
+    if (!graphChars) return '';
+    
+    let html = '';
+    for (let char of graphChars) {
+        if (char === '|') {
+            html += '<div class="graph-line"></div>';
+        } else if (char === '*') {
+            html += '<div class="graph-node current"></div>';
+        } else if (char === '\\') {
+            html += '<div class="graph-branch"></div>';
+        } else if (char === '/') {
+            html += '<div class="graph-branch"></div>';
+        } else {
+            html += '<span style="width: 8px; display: inline-block;"></span>';
+        }
+    }
+    return html;
+}
+
+function addCommitClickListeners() {
+    const commitRows = document.querySelectorAll('.commit-row');
+    commitRows.forEach(row => {
+        row.addEventListener('click', function() {
+            // Remove previous selection
+            document.querySelectorAll('.commit-row.selected').forEach(r => r.classList.remove('selected'));
+            
+            // Add selection to current row
+            this.classList.add('selected');
+            
+            // Get commit hash and load details
+            const commitHash = this.dataset.commitHash;
+            selectCommit(commitHash);
+        });
+    });
+}
+
+function selectCommit(commitHash) {
+    if (typeof commitHash === 'string') {
+        // Find commit in the list
+        const commitRow = document.querySelector(`[data-commit-hash="${commitHash}"]`);
+        if (commitRow) {
+            document.querySelectorAll('.commit-row.selected').forEach(r => r.classList.remove('selected'));
+            commitRow.classList.add('selected');
+        }
+        
+        // We need to get the full commit data from the API or stored data
+        // For now, we'll show the detail panel but with limited info
+        showCommitDetailPanel();
+        
+        // Try to get commit details from the stored commits array
+        if (window.storedCommits && window.storedCommits.length > 0) {
+            const commit = window.storedCommits.find(c => c.short_hash === commitHash);
+            if (commit) {
+                currentCommit = commit;
+                currentCommitHash = commit.short_hash;
+                displayCommitDetails(commit);
+                return;
+            }
+        }
+        
+        // If we can't find the commit data, show a message
+        const safeUpdateElement = (id, content, attribute = 'textContent') => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (attribute === 'innerHTML') {
+                    element.innerHTML = content;
+                } else {
+                    element[attribute] = content;
+                }
+            } else {
+                console.warn(`Element with id '${id}' not found`);
+            }
+        };
+        
+        safeUpdateElement('commit-avatar', `<i class="fas fa-user"></i>`, 'innerHTML');
+        safeUpdateElement('commit-author-name', 'Loading...');
+        safeUpdateElement('commit-hash', commitHash);
+        safeUpdateElement('commit-date', 'Loading...');
+        safeUpdateElement('commit-message', 'Loading commit details...');
+        
+    } else {
+        // Direct commit object
+        currentCommit = commitHash;
+        currentCommitHash = commitHash.short_hash;
+        displayCommitDetails(commitHash);
+        showCommitDetailPanel();
+    }
+}
+
+function loadCommitDetails(commit) {
+    // For now, we'll use the commit data from the row
+    // In a real implementation, you might want to fetch full details from the API
+    showCommitDetailPanel();
+}
+
+function displayCommitDetails(commit) {
+    // Helper function to safely update element content
+    const safeUpdateElement = (id, content, attribute = 'textContent') => {
+        const element = document.getElementById(id);
+        if (element) {
+            if (attribute === 'innerHTML') {
+                element.innerHTML = content;
+            } else {
+                element[attribute] = content;
+            }
+        } else {
+            console.warn(`Element with id '${id}' not found`);
+        }
+    };
+    
+    // Update commit avatar
+    safeUpdateElement('commit-avatar', `<i class="fas fa-user"></i>`, 'innerHTML');
+    
+    // Update commit information in single-line format
+    safeUpdateElement('commit-author-name', commit.author_name);
+    safeUpdateElement('commit-hash', commit.short_hash);
+    safeUpdateElement('commit-date', commit.relative_date || commit.date);
+    safeUpdateElement('commit-message', commit.message);
+    
+
+    
+    // Load files for this commit
+    loadCommitFiles(commit.short_hash);
+}
+
+function showCommitDetailPanel() {
+    const detailPanel = document.getElementById('commit-detail-panel');
+    if (detailPanel) {
+        detailPanel.style.display = 'block';
+
+    } else {
+        console.warn('Commit detail panel not found');
+    }
+}
+
+
+
+function loadCommitFiles(commitHash) {
+    fetch(`/api/dataflows/{{ dataflow.id }}/git-operations/commit-files?commit_hash=${commitHash}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayCommitFiles(data.commit_files);
+            } else {
+                const fileList = document.getElementById('file-list');
+                if (fileList) {
+                    fileList.innerHTML = '<p>No files found for this commit.</p>';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const fileList = document.getElementById('file-list');
+            if (fileList) {
+                fileList.innerHTML = '<p>Error loading files.</p>';
+            }
+        });
+}
+
+function displayCommitFiles(files) {
+    const fileTree = document.getElementById('file-tree');
+    
+    if (!fileTree) {
+        console.warn('File tree element not found');
+        return;
+    }
+    
+    if (!files || files.length === 0) {
+        fileTree.innerHTML = '<p class="text-muted p-3">No files changed in this commit.</p>';
+        return;
+    }
+    
+    // Group files by directory
+    const fileGroups = {};
+    files.forEach(file => {
+        const pathParts = file.path.split('/');
+        const fileName = pathParts.pop();
+        const dirPath = pathParts.join('/');
+        
+        if (!fileGroups[dirPath]) {
+            fileGroups[dirPath] = [];
+        }
+        fileGroups[dirPath].push({ ...file, fileName });
+    });
+    
+    let html = '';
+    
+    // Render directories and files
+    Object.keys(fileGroups).forEach(dirPath => {
+        const filesInDir = fileGroups[dirPath];
+        
+        if (dirPath) {
+            // Directory header
+            html += `
+                <div class="file-tree-item directory-item">
+                    <div class="file-tree-icon">
+                        <i class="fas fa-folder text-warning"></i>
+                    </div>
+                    <div class="file-path">${dirPath}</div>
+                </div>
+            `;
+        }
+        
+        // Files in this directory
+        filesInDir.forEach(file => {
+            const statusIcon = file.status === 'A' ? '+' : file.status === 'M' ? '~' : file.status === 'D' ? '-' : '?';
+            const statusClass = file.status === 'A' ? 'added' : file.status === 'M' ? 'modified' : file.status === 'D' ? 'deleted' : '';
+            
+            html += `
+                <div class="file-tree-item" onclick="selectFile('${file.path}', '${file.status}')" data-file-path="${file.path}">
+                    <div class="file-tree-icon">
+                        <i class="fas fa-file text-primary"></i>
+                    </div>
+                    <div class="file-status ${statusClass}">${statusIcon}</div>
+                    <div class="file-path">${file.fileName}</div>
+                </div>
+            `;
+        });
+    });
+    
+    fileTree.innerHTML = html;
+    
+    // Select first file by default
+    if (files.length > 0) {
+        selectFile(files[0].path, files[0].status);
+    }
+}
+
+// Action button functions
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Hash copied to clipboard!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy hash', 'error');
+    });
+}
+
+
+
+
+
+function showRevertDialog(commitHash) {
+    document.getElementById('revert-commit-hash').textContent = commitHash;
+    document.getElementById('revertMessage').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('revertModal'));
+    modal.show();
+}
+
+function revertCommit() {
+    const revertMessage = document.getElementById('revertMessage').value.trim();
+    
+    fetch('/api/dataflows/{{ dataflow.id }}/git-operations/revert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            commit_hash: currentCommitHash,
+            commit_message: revertMessage || undefined
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Commit reverted successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('revertModal')).hide();
+            // Reload commits to show the revert
+            loadCommits();
+        } else {
+            showToast(data.error || 'Failed to revert commit', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Failed to revert commit', 'error');
+    });
+}
+
+
+
+
+
+function selectFile(filePath, fileStatus) {
+    // Remove previous selection
+    document.querySelectorAll('.file-tree-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Add selection to current file
+    const selectedItem = document.querySelector(`[data-file-path="${filePath}"]`);
+    if (selectedItem) {
+        selectedItem.classList.add('selected');
+    }
+    
+    // Update file path display
+    const diffFilePath = document.getElementById('diff-file-path');
+    if (diffFilePath) {
+        diffFilePath.textContent = filePath;
+    }
+    
+    // Load file diff
+    loadFileDiff(filePath);
+}
+
+function loadFileDiff(filePath) {
+    const diffContent = document.getElementById('diff-content');
+    
+    if (!diffContent) {
+        console.warn('Diff content element not found');
+        return;
+    }
+    
+    // Show loading state
+    diffContent.innerHTML = `
+        <div class="text-center p-4">
+            <div class="loading-spinner"></div>
+            <span>Loading file diff...</span>
+        </div>
+    `;
+    
+    // Fetch the actual file diff from the API
+    fetch(`/api/dataflows/{{ dataflow.id }}/git-operations/file-diff?commit_hash=${currentCommitHash}&file_path=${encodeURIComponent(filePath)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Parse and format the diff content
+                const formattedDiff = formatDiffContent(data.diff_content);
+                diffContent.innerHTML = formattedDiff;
+            } else {
+                diffContent.innerHTML = `
+                    <div class="text-center p-4">
+                        <i class="fas fa-exclamation-triangle text-warning" style="font-size: 24px; margin-bottom: 10px;"></i>
+                        <p class="text-muted">Failed to load file diff</p>
+                        <small class="text-muted">${data.error || 'Unknown error'}</small>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading file diff:', error);
+            diffContent.innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-exclamation-triangle text-danger" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p class="text-muted">Error loading file diff</p>
+                    <small class="text-muted">${error.message}</small>
+                </div>
+            `;
+        });
+}
+
+function formatDiffContent(diffContent) {
+    if (!diffContent) {
+        return '<p class="text-muted p-3">No diff content available</p>';
+    }
+    
+    // Split the diff content into lines
+    const lines = diffContent.split('\n');
+    let html = '';
+    
+    lines.forEach((line, index) => {
+        if (line.startsWith('@@')) {
+            // Diff header line
+            html += `<div class="diff-header-line">${escapeHtml(line)}</div>`;
+        } else if (line.startsWith('+')) {
+            // Added line
+            html += `<div class="diff-line added">${escapeHtml(line)}</div>`;
+        } else if (line.startsWith('-')) {
+            // Removed line
+            html += `<div class="diff-line removed">${escapeHtml(line)}</div>`;
+        } else if (line.startsWith(' ')) {
+            // Context line
+            html += `<div class="diff-line context">${escapeHtml(line)}</div>`;
+        } else if (line.trim() === '') {
+            // Empty line
+            html += '<br>';
+        } else {
+            // Other lines (like file mode, etc.)
+            html += `<div class="diff-line">${escapeHtml(line)}</div>`;
+        }
+    });
+    
+    return html;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+
+
+function showToast(message, type = 'info') {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 5000);
+}
+
+function showError(message) {
+    console.error('Error:', message);
+    
+    const container = document.getElementById('commit-history-panel');
+    if (!container) {
+        console.error('Commit history panel not found for error display');
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="text-center p-5">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 20px;"></i>
+            <h4 class="text-danger">Error Loading Commits</h4>
+            <p class="text-muted mb-3">${message}</p>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-outline-primary" onclick="loadCommits()">
+                    <i class="fas fa-redo me-1"></i>Retry
+                </button>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-1"></i>Log In
+                </a>
+            </div>
+        </div>
+    `;
+    
+    // Also show toast notification
+    showToast(message, 'error');
+}
+</script>
+{% endblock %}

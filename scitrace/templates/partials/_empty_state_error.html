@@ -1,0 +1,88 @@
+<!--
+SciTrace Empty State Error Partial
+
+This partial provides a consistent error display for when a list or collection
+is empty due to an error rather than being genuinely empty.
+
+Usage:
+{% include 'partials/_empty_state_error.html' with context %}
+
+Optional context variables:
+- error_message: Custom error message to display
+- error_type: Type of error (network, server, permission, etc.)
+- show_retry: Whether to show retry button (default: true)
+- show_refresh: Whether to show refresh button (default: true)
+- retry_function: JavaScript function to call on retry (default: retryLoad)
+-->
+
+<div class="scitrace-empty-state-error" id="empty-state-error-{{ error_type or 'generic' }}">
+    <i class="fas fa-exclamation-triangle text-warning"></i>
+    
+    <h4>
+        {% if error_type == 'network' %}
+            Connection Error
+        {% elif error_type == 'server' %}
+            Server Error
+        {% elif error_type == 'permission' %}
+            Access Denied
+        {% elif error_type == 'not_found' %}
+            Not Found
+        {% elif error_type == 'timeout' %}
+            Request Timeout
+        {% else %}
+            Error Loading Data
+        {% endif %}
+    </h4>
+    
+    <p>
+        {% if error_type == 'network' %}
+            Unable to connect to the server. Please check your internet connection and try again.
+        {% elif error_type == 'server' %}
+            The server encountered an error while processing your request. Please try again later.
+        {% elif error_type == 'permission' %}
+            You don't have permission to access this data. Please contact your administrator.
+        {% elif error_type == 'not_found' %}
+            The requested data was not found. It may have been moved or deleted.
+        {% elif error_type == 'timeout' %}
+            The request took too long to complete. Please try again.
+        {% else %}
+            {{ error_message or "We encountered an error while loading the data. Please try again." }}
+        {% endif %}
+    </p>
+    
+    <div class="scitrace-error-actions">
+        {% if show_retry is not defined or show_retry %}
+        <button type="button" class="scitrace-btn scitrace-btn-primary" onclick="{{ retry_function or 'retryLoad' }}()">
+            <i class="fas fa-redo"></i> Try Again
+        </button>
+        {% endif %}
+        
+        {% if show_refresh is not defined or show_refresh %}
+        <button type="button" class="scitrace-btn scitrace-btn-secondary" onclick="window.location.reload()">
+            <i class="fas fa-refresh"></i> Refresh Page
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Default retry function
+function retryLoad() {
+    // This function can be overridden by the parent component
+    if (window.retryLoad) {
+        window.retryLoad();
+    } else {
+        // Default behavior is to reload the page
+        window.location.reload();
+    }
+}
+
+// Initialize empty state error if this is a standalone error display
+document.addEventListener('DOMContentLoaded', function() {
+    const emptyStateError = document.getElementById('empty-state-error-{{ error_type or 'generic' }}');
+    if (emptyStateError) {
+        // Add any initialization logic here
+        console.log('Empty state error initialized');
+    }
+});
+</script>

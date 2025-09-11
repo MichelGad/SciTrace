@@ -1,0 +1,7 @@
+<!-- Demo Info Alert Partial -->
+{% if user.role == 'admin' %}
+<div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <small>{{ message }}</small>
+</div>
+{% endif %}

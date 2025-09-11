@@ -1,0 +1,66 @@
+<!--
+SciTrace Loading Error Partial
+
+This partial provides a consistent error display for when data fails to load
+or when there are network issues. It's designed to be more lightweight than
+the full error boundary.
+
+Usage:
+{% include 'partials/_loading_error.html' with context %}
+
+Optional context variables:
+- error_message: Custom error message to display
+- error_type: Type of error (network, timeout, server, etc.)
+- show_retry: Whether to show retry button (default: true)
+- retry_function: JavaScript function to call on retry (default: retryLoad)
+-->
+
+<div class="scitrace-loading-error" id="loading-error-{{ error_type or 'generic' }}">
+    <i class="fas fa-exclamation-triangle text-warning"></i>
+    <h4>Failed to Load Data</h4>
+    <p>
+        {% if error_type == 'network' %}
+            Unable to connect to the server. Please check your internet connection and try again.
+        {% elif error_type == 'timeout' %}
+            The request took too long to complete. Please try again.
+        {% elif error_type == 'server' %}
+            The server encountered an error. Please try again later.
+        {% elif error_type == 'not_found' %}
+            The requested data was not found.
+        {% elif error_type == 'unauthorized' %}
+            You need to log in to access this data.
+        {% elif error_type == 'forbidden' %}
+            You don't have permission to access this data.
+        {% else %}
+            {{ error_message or "We encountered an error while loading the data. Please try again." }}
+        {% endif %}
+    </p>
+    
+    {% if show_retry is not defined or show_retry %}
+    <button type="button" class="scitrace-btn scitrace-btn-primary" onclick="{{ retry_function or 'retryLoad' }}()">
+        <i class="fas fa-redo"></i> Try Again
+    </button>
+    {% endif %}
+</div>
+
+<script>
+// Default retry function
+function retryLoad() {
+    // This function can be overridden by the parent component
+    if (window.retryLoad) {
+        window.retryLoad();
+    } else {
+        // Default behavior is to reload the page
+        window.location.reload();
+    }
+}
+
+// Initialize loading error if this is a standalone error display
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingError = document.getElementById('loading-error-{{ error_type or 'generic' }}');
+    if (loadingError) {
+        // Add any initialization logic here
+        console.log('Loading error initialized');
+    }
+});
+</script>

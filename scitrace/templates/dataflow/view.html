@@ -1,0 +1,1217 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dataflow.name }} - SciTrace{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vis.min.css') }}">
+<style>
+    #dataflow-network {
+        cursor: default;
+    }
+    
+    /* Make nodes look clickable */
+    .vis-network .vis-node {
+        cursor: pointer !important;
+        transition: all 0.2s ease;
+    }
+    
+    .vis-network .vis-node:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Modal styling */
+    .modal-lg {
+        max-width: 900px;
+    }
+    
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+    
+    .list-group-item:first-child {
+        border-top: none;
+    }
+    
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Dataflow Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-folder-tree text-primary fs-1"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">Repo View: {{ dataflow.name }}</h2>
+                        <p class="text-muted mb-0">Interactive dataset structure and repository organization</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('dataflow.lifecycle_view', dataflow_id=dataflow.id) }}" class="btn btn-outline-success">
+                        <i class="fas fa-sitemap me-2"></i>Data Lifecycle
+                    </a>
+                    <a href="{{ url_for('dataflow.git_log', dataflow_id=dataflow.id) }}" class="btn btn-outline-warning" style="border-color: #f05032; color: #f05032;">
+                        <i class="fas fa-code-branch me-2"></i>Git Log
+                    </a>
+                    <a href="{{ url_for('dataflow.edit', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Dataflow
+                    </a>
+                    <a href="{{ url_for('dataflow.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dataflows
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dataflow Details -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-folder-tree me-2"></i>Repository Structure
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-success btn-sm" onclick="saveAllChanges()">
+                                        <i class="fas fa-save me-1"></i>Save Changes
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="regenerateDataflow()">
+                                        <i class="fas fa-sync me-1"></i>Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="dataflow-network" style="height: 600px; border: 1px solid #ddd; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Node Type Legend -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Node Types</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #4CAF50; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Dataset Root</strong></span>
+                                    </div>
+                                    <small class="text-muted">Central dataset node</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #87CEEB; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Raw Data</strong></span>
+                                    </div>
+                                    <small class="text-muted">Original data files</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #90EE90; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Preprocessed</strong></span>
+                                    </div>
+                                    <small class="text-muted">Cleaned data files</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #4CAF50; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Scripts</strong></span>
+                                    </div>
+                                    <small class="text-muted">Analysis scripts</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #FFA07A; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Results</strong></span>
+                                    </div>
+                                    <small class="text-muted">Final outputs</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="legend-color" style="background-color: #DDA0DD; width: 20px; height: 20px; border: 1px solid #666; margin-right: 10px;"></div>
+                                        <span><strong>Plots</strong></span>
+                                    </div>
+                                    <small class="text-muted">Visualizations</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dataflow Information and Actions -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Dataflow Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-success">Active</span>
+                            </p>
+                            <p><strong>Created:</strong> {{ dataflow.created_at.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Last Updated:</strong> {{ dataflow.updated_at.strftime('%B %d, %Y') }}</p>
+                            
+                            {% set metadata = dataflow.get_metadata() %}
+                            {% if metadata %}
+                            <hr>
+                            <h6>Statistics:</h6>
+                            <p><strong>Workflow Type:</strong> {{ metadata.get('workflow_type', 'research_pipeline') }}</p>
+                            <p><strong>Total Stages:</strong> {{ metadata.get('total_stages', 0) }}</p>
+                            <p><strong>Total Connections:</strong> {{ metadata.get('total_connections', 0) }}</p>
+                            {% if dataflow.project.dataset_path %}
+                            <p><strong>Dataset Path:</strong> {{ dataflow.project.dataset_path }}</p>
+                            {% endif %}
+                            {% endif %}
+                            
+                            {% if dataflow.description %}
+                            <hr>
+                            <h6>Description:</h6>
+                            <p class="text-muted">{{ dataflow.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-info" onclick="exportDataflow()">
+                                    <i class="fas fa-download me-2"></i>Export Dataflow
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="shareDataflow()">
+                                    <i class="fas fa-share me-2"></i>Share Dataflow
+                                </button>
+                                <form method="POST" action="{{ url_for('dataflow.delete', dataflow_id=dataflow.id) }}" 
+                                      style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this dataflow?')">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash me-2"></i>Delete Dataflow
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Run Script Modal -->
+<div class="modal fade" id="runScriptModal" tabindex="-1" aria-labelledby="runScriptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="runScriptModalLabel">
+                    <i class="fas fa-play me-2"></i>Run Script with DataLad
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Script:</strong> <span id="scriptName"></span>
+                            <input type="hidden" id="scriptPath">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="commitMessage" class="form-label">Commit Message</label>
+                            <input type="text" class="form-control" id="commitMessage" placeholder="e.g., Run analysis script">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="inputFiles" class="form-label">Input Files (one per line)</label>
+                            <textarea class="form-control" id="inputFiles" rows="3" placeholder="e.g.,&#10;raw_data/data.csv&#10;preprocessed/cleaned.csv"></textarea>
+                            <div class="form-text">Files that will be used as input by the script</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="outputFiles" class="form-label">Output Files (one per line)</label>
+                            <textarea class="form-control" id="outputFiles" rows="3" placeholder="e.g.,&#10;analysis/results.csv&#10;visualizations/plot.png"></textarea>
+                            <div class="form-text">Files that will be created by the script</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="command" class="form-label">Command to Execute</label>
+                            <textarea class="form-control" id="command" rows="3" placeholder="e.g., python3 analysis.py {inputs} {outputs}"></textarea>
+                            <div class="form-text">Use {inputs} and {outputs} as placeholders for file paths. Use python3 instead of python.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Example:</strong><br>
+                            <code>python3 scripts/data_cleaning.py raw_data/water_samples.csv results/cleaned_data.csv</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="runScriptBtn" onclick="runScriptWithDataLad()">
+                    <i class="fas fa-play me-2"></i>Run Script
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vis.min.js') }}"></script>
+<script>
+// Initialize dataflow visualization
+let network = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('dataflow-network');
+    
+    // Check if vis.js is loaded
+    if (typeof vis === 'undefined') {
+        container.innerHTML = '<div class="text-center p-4"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-3"></i><p class="text-muted">Error: vis.js library not loaded. Please refresh the page.</p></div>';
+        console.error('vis.js library not found');
+        return;
+    }
+    
+    // Get dataflow data
+    const nodes = {{ dataflow.get_nodes() | tojson }};
+    const edges = {{ dataflow.get_edges() | tojson }};
+    
+    // Debug logging
+    console.log('Dataflow nodes:', nodes);
+    console.log('Dataflow edges:', edges);
+    console.log('Container element:', container);
+    console.log('vis.js version:', vis.version);
+    
+    // Check if we have data
+    if (!nodes || nodes.length === 0) {
+        container.innerHTML = '<div class="text-center p-4"><i class="fas fa-exclamation-triangle text-warning fa-2x mb-3"></i><p class="text-muted">No dataflow nodes found. The dataflow may be empty or not properly generated.</p><button class="btn btn-primary" onclick="regenerateDataflow()">Regenerate Dataflow</button></div>';
+        return;
+    }
+    
+    // Create nodes dataset
+    const nodesDataset = new vis.DataSet(nodes.map(node => {
+        let tooltip = `Click to view details for ${node.label}`;
+        if (node.has_untracked) {
+            tooltip += `\n⚠️ This stage has ${node.untracked_files} untracked file(s)`;
+        }
+        
+        return {
+            id: node.id,
+            label: node.label,
+            title: tooltip, // Interactive tooltip
+            color: node.color || (node.type === 'directory' ? '#4CAF50' : '#2196F3'),
+            shape: 'box',
+            size: 25,
+            font: {
+                size: 12,
+                color: '#333'
+            },
+            borderWidth: node.has_untracked ? 3 : 2,
+            borderColor: node.has_untracked ? '#FFA500' : '#666'
+        };
+    }));
+    
+    // Create edges dataset
+    const edgesDataset = new vis.DataSet(edges.map(edge => ({
+        from: edge.from,
+        to: edge.to,
+        arrows: edge.arrows || 'to',
+        color: '#666',
+        label: edge.label || '',
+        font: {
+            size: 10,
+            color: '#666'
+        }
+    })));
+    
+    // Network configuration for spider web layout
+    const options = {
+        nodes: {
+            font: {
+                size: 11,
+                multi: true,
+                bold: '12px arial black'
+            },
+            borderWidth: 2,
+            shadow: true,
+            shape: 'box',
+            widthConstraint: {
+                minimum: 80,
+                maximum: 120
+            },
+            heightConstraint: {
+                minimum: 40,
+                maximum: 60
+            }
+        },
+        edges: {
+            width: 1,
+            shadow: false,
+            smooth: {
+                type: 'cubicBezier',
+                forceDirection: 'none'
+            },
+            color: {
+                color: '#666',
+                highlight: '#333',
+                hover: '#333'
+            }
+        },
+        physics: {
+            stabilization: false,
+            barnesHut: {
+                gravitationalConstant: -8000,
+                springConstant: 0.005,
+                springLength: 60,
+                damping: 0.2
+            }
+        },
+        layout: {
+            hierarchical: {
+                enabled: false
+            }
+        },
+        interaction: {
+            hover: true,
+            tooltipDelay: 200
+        }
+    };
+    
+    // Create network
+    try {
+        network = new vis.Network(container, {
+            nodes: nodesDataset,
+            edges: edgesDataset
+        }, options);
+        
+        console.log('Network created successfully');
+    } catch (error) {
+        console.error('Error creating network:', error);
+        container.innerHTML = '<div class="text-center p-4"><i class="fas fa-exclamation-triangle text-danger fa-2x mb-3"></i><p class="text-muted">Error creating visualization: ' + error.message + '</p></div>';
+        return;
+    }
+    
+    // Add event listeners
+    network.on('click', function(params) {
+        if (params.nodes.length > 0) {
+            const nodeId = params.nodes[0];
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                console.log('Clicked node:', node);
+                showStageDetails(node);
+            }
+        }
+    });
+});
+
+function saveAllChanges() {
+    const commitMessage = prompt('Enter commit message for saving changes:', 'Save all changes');
+    if (commitMessage === null) {
+        return; // User cancelled
+    }
+    
+    fetch('{{ url_for("dataflow_api.save_all_changes", dataflow_id=dataflow.id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            commit_message: commitMessage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+        } else {
+            alert('Error saving changes: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving changes:', error);
+        alert('Failed to save changes. Please try again.');
+    });
+}
+
+function regenerateDataflow() {
+    if (confirm('This will regenerate the dataflow from the dataset. Continue?')) {
+        fetch('{{ url_for("dataflow_api.regenerate_dataflow", dataflow_id=dataflow.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error regenerating dataflow: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error regenerating dataflow');
+        });
+    }
+}
+
+function exportDataflow() {
+    const data = {
+        name: '{{ dataflow.name }}',
+        description: '{{ dataflow.description }}',
+        nodes: {{ dataflow.get_nodes() | tojson }},
+        edges: {{ dataflow.get_edges() | tojson }},
+        metadata: {{ dataflow.get_metadata() | tojson }}
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '{{ dataflow.name }}_dataflow.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function shareDataflow() {
+    // Copy current URL to clipboard
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Dataflow URL copied to clipboard!');
+    }, function() {
+        alert('Failed to copy URL to clipboard');
+    });
+}
+
+// Dataflow ID for API calls
+const dataflowId = {{ dataflow.id }};
+
+// Function to show stage details
+function showStageDetails(node) {
+    const stageKey = node.type;
+    
+    // Show loading state
+    const stageInfo = document.getElementById('stage-info');
+    const stageFiles = document.getElementById('stage-files');
+    
+    stageInfo.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">Loading stage information...</p></div>';
+    stageFiles.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">Loading files...</p></div>';
+    
+    // Update modal title
+    document.getElementById('stageDetailsModalLabel').textContent = `${node.label} Stage Details`;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('stageDetailsModal'));
+    modal.show();
+    
+    // Fetch real data from API
+    fetch(`/api/dataflows/${dataflowId}/stage/${stageKey}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(stageData => {
+            // Populate stage info
+            const dataladStatus = stageData.metadata.datalad_status || 'unknown';
+            const statusIcon = dataladStatus === 'clean' ? 'fa-check-circle text-success' : 
+                              dataladStatus === 'mixed' ? 'fa-exclamation-triangle text-warning' : 
+                              dataladStatus === 'empty' ? 'fa-folder-open text-muted' : 'fa-question-circle text-muted';
+            
+            stageInfo.innerHTML = `
+                <p><strong>Stage Name:</strong> ${stageData.stage_name.replace(/_/g, ' ').toUpperCase()}</p>
+                <p><strong>Path:</strong> ${stageData.path}</p>
+                <hr>
+                <h6>Stage Statistics:</h6>
+                <ul class="list-unstyled">
+                    <li><strong>File Count:</strong> ${stageData.metadata.file_count}</li>
+                    <li><strong>Tracked Files:</strong> <span class="text-success">${stageData.metadata.tracked_files || 0}</span></li>
+                    <li><strong>Untracked Files:</strong> <span class="text-warning">${stageData.metadata.untracked_files || 0}</span></li>
+                    <li><strong>Deleted Files:</strong> <span class="text-danger">${stageData.metadata.deleted_files || 0}</span></li>
+                    <li><strong>Total Size:</strong> ${stageData.metadata.total_size}</li>
+                    <li><strong>Last Modified:</strong> ${stageData.metadata.last_modified || 'N/A'}</li>
+                    <li><strong>Stage Type:</strong> ${stageData.metadata.stage_type}</li>
+                    <li><strong>DataLad Status:</strong> <i class="fas ${statusIcon} me-1"></i>${dataladStatus.charAt(0).toUpperCase() + dataladStatus.slice(1)}</li>
+                </ul>
+            `;
+            
+            // Populate files
+            if (stageData.files && stageData.files.length > 0) {
+                stageFiles.innerHTML = `
+                    <div class="list-group">
+                        ${stageData.files.map(file => {
+                            const statusIcon = file.tracked ? 'fa-check-circle text-success' : 'fa-exclamation-triangle text-warning';
+                            const statusText = file.tracked ? 'Tracked' : 'Not tracked by DataLad';
+                            
+                            // Check if file is a script
+                            const isScript = file.type === 'Python' || file.type === 'R Script' || 
+                                           file.name.endsWith('.py') || file.name.endsWith('.R') || 
+                                           file.name.endsWith('.r') || file.name.endsWith('.sh') ||
+                                           file.name.endsWith('.js') || file.name.endsWith('.m');
+                            
+                            return `
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas ${isScript ? 'fa-code' : 'fa-file'} me-2"></i>
+                                            <strong>${file.name}</strong>
+                                            <span class="ms-2">
+                                                <i class="fas ${statusIcon}" title="${statusText}"></i>
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">${file.type} • ${file.size} • Modified: ${file.modified}</small>
+                                        ${!file.tracked ? `<br><small class="text-warning"><i class="fas fa-info-circle me-1"></i>${statusText}</small>` : ''}
+                                    </div>
+                                    <div class="ms-2 d-flex gap-1">
+                                        ${isScript ? `
+                                            <button class="btn btn-sm btn-outline-primary" onclick="showRunScriptModal('${stageData.stage_dir}/${file.path}', '${file.name}')" title="Run Script with DataLad">
+                                                <i class="fas fa-play me-1"></i>Run Script
+                                            </button>
+                                        ` : ''}
+                                        ${!file.tracked ? `
+                                            <button class="btn btn-sm btn-outline-success" onclick="addFileToDataLad('${stageData.stage_dir}/${file.path}', '${file.name}')" title="Add to DataLad">
+                                                <i class="fas fa-plus me-1"></i>Add to DataLad
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } else {
+                stageFiles.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No files found in this stage directory.
+                    </div>
+                `;
+            }
+            
+            // Add "Add All Untracked Files" button if there are untracked files
+            if (stageData.metadata.untracked_files > 0) {
+                const buttonDiv = document.createElement('div');
+                buttonDiv.className = 'mt-3';
+                buttonDiv.innerHTML = `
+                    <button class="btn btn-success btn-sm" onclick="addAllUntrackedFiles('${stageData.stage_name}')">
+                        <i class="fas fa-plus me-1"></i>Add All Untracked Files to DataLad
+                    </button>
+                `;
+                stageFiles.appendChild(buttonDiv);
+            }
+            
+            // Add deleted files section if there are deleted files
+            if (stageData.deleted_files && stageData.deleted_files.length > 0) {
+                const deletedFilesDiv = document.createElement('div');
+                deletedFilesDiv.className = 'mt-4';
+                deletedFilesDiv.innerHTML = `
+                    <h6 class="text-danger">
+                        <i class="fas fa-trash me-2"></i>Deleted Files (${stageData.deleted_files.length})
+                    </h6>
+                    <div class="list-group">
+                        ${stageData.deleted_files.map(file => `
+                            <div class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-trash me-2"></i>
+                                        <strong>${file.name}</strong>
+                                        <span class="ms-2">
+                                            <i class="fas fa-times-circle text-danger" title="Deleted"></i>
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">Path: ${file.path}</small>
+                                    <br><small class="text-danger"><i class="fas fa-info-circle me-1"></i>File has been deleted from DataLad</small>
+                                </div>
+                                <div class="ms-2">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="restoreDeletedFile('${file.path}', '${file.name}')" title="Restore from DataLad">
+                                        <i class="fas fa-undo me-1"></i>Restore
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-warning btn-sm" onclick="saveStageWithDeletedFiles('${stageData.stage_name}')" title="Save stage to commit deletion changes">
+                            <i class="fas fa-save me-1"></i>Save Stage (Commit Deletions)
+                        </button>
+                        <small class="text-muted d-block mt-1">
+                            <i class="fas fa-info-circle me-1"></i>This will commit the file deletions to DataLad
+                        </small>
+                    </div>
+                `;
+                stageFiles.appendChild(deletedFilesDiv);
+            }
+            
+            // Set up open location button
+            const openLocationBtn = document.getElementById('openLocationBtn');
+            openLocationBtn.onclick = function() {
+                // Open folder in file explorer
+                fetch('/api/open-folder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        folder_path: stageData.path
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                        alertDiv.innerHTML = `
+                            <i class="fas fa-folder-open me-2"></i>
+                            <strong>Success!</strong> Folder opened in file explorer.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        `;
+                        document.body.appendChild(alertDiv);
+                        
+                        // Auto-remove after 3 seconds
+                        setTimeout(() => {
+                            if (alertDiv.parentNode) {
+                                alertDiv.parentNode.removeChild(alertDiv);
+                            }
+                        }, 3000);
+                    } else {
+                        alert('Error opening folder: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error opening folder. Please check the console for details.');
+                });
+            };
+        })
+        .catch(error => {
+            console.error('Error fetching stage data:', error);
+            stageInfo.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error loading stage information: ${error.message}
+                </div>
+            `;
+            stageFiles.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error loading files: ${error.message}
+                </div>
+            `;
+        });
+}
+
+// Function to add a specific file to DataLad
+function addFileToDataLad(filePath, fileName) {
+    const commitMessage = prompt(`Enter commit message for "${fileName}":`, `Add ${fileName}`);
+    if (commitMessage === null) return; // User cancelled
+    
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Adding...';
+    
+    fetch('/api/dataflows/' + dataflowId + '/add-file-to-datalad', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            file_path: filePath,
+            commit_message: commitMessage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Success!</strong> ${fileName} has been added to DataLad.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 3000);
+            
+            // Refresh the stage data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert('Error adding file to DataLad: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding file to DataLad');
+    })
+    .finally(() => {
+        // Restore button state
+        button.disabled = false;
+        button.innerHTML = originalText;
+    });
+}
+
+// Function to add all untracked files to DataLad
+function addAllUntrackedFiles(stageName) {
+    const commitMessage = prompt('Enter commit message for all untracked files:', 'Add untracked files');
+    if (commitMessage === null) return; // User cancelled
+    
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Adding...';
+    
+    fetch('/api/dataflows/' + dataflowId + '/add-all-untracked-to-datalad', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            stage_name: stageName,
+            commit_message: commitMessage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Success!</strong> All untracked files have been added to DataLad.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 3000);
+            
+            // Refresh the stage data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert('Error adding files to DataLad: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding files to DataLad');
+    })
+    .finally(() => {
+        // Restore button state
+        button.disabled = false;
+        button.innerHTML = originalText;
+    });
+}
+
+// Function to show the run script modal
+function showRunScriptModal(scriptPath, scriptName) {
+    // Set the script path and name in the modal
+    document.getElementById('scriptPath').value = scriptPath;
+    document.getElementById('scriptName').textContent = scriptName;
+    
+    // Clear previous inputs
+    document.getElementById('commitMessage').value = `Run ${scriptName}`;
+    document.getElementById('inputFiles').value = '';
+    document.getElementById('outputFiles').value = '';
+    document.getElementById('command').value = '';
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('runScriptModal'));
+    modal.show();
+}
+
+// Function to run script with datalad
+function runScriptWithDataLad() {
+    const scriptPath = document.getElementById('scriptPath').value;
+    const commitMessage = document.getElementById('commitMessage').value;
+    const inputFiles = document.getElementById('inputFiles').value.split('\n').filter(line => line.trim());
+    const outputFiles = document.getElementById('outputFiles').value.split('\n').filter(line => line.trim());
+    const command = document.getElementById('command').value.trim();
+    
+    if (!command) {
+        alert('Please enter a command to execute');
+        return;
+    }
+    
+    // Show loading state
+    const runButton = document.getElementById('runScriptBtn');
+    const originalText = runButton.innerHTML;
+    runButton.disabled = true;
+    runButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Running...';
+    
+    fetch('/api/dataflows/' + dataflowId + '/run-script', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            script_path: scriptPath,
+            commit_message: commitMessage,
+            inputs: inputFiles,
+            outputs: outputFiles,
+            command: command
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 400px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Success!</strong> Script executed successfully with DataLad tracking.
+                <br><small class="text-muted">Command: ${data.command}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('runScriptModal'));
+            modal.hide();
+            
+            // Refresh the stage data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            // Show detailed error message
+            let errorMessage = 'Error running script:\n\n';
+            if (data.error) {
+                errorMessage += data.error;
+            } else {
+                errorMessage += 'Unknown error occurred';
+            }
+            
+            if (data.command) {
+                errorMessage += '\n\nCommand attempted:\n' + data.command;
+            }
+            
+            errorMessage += '\n\nTroubleshooting tips:\n';
+            errorMessage += '• Check that the script path is correct\n';
+            errorMessage += '• Ensure input files exist\n';
+            errorMessage += '• Verify the command syntax\n';
+            errorMessage += '• Make sure the script has execute permissions\n';
+            errorMessage += '• Check that all required dependencies are installed';
+            
+            alert(errorMessage);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        let errorMessage = 'Network error running script:\n\n';
+        errorMessage += 'Failed to communicate with the server.\n\n';
+        errorMessage += 'Please check:\n';
+        errorMessage += '• Your internet connection\n';
+        errorMessage += '• That the server is running\n';
+        errorMessage += '• Browser console for more details';
+        alert(errorMessage);
+    })
+    .finally(() => {
+        // Restore button state
+        runButton.disabled = false;
+        runButton.innerHTML = originalText;
+    });
+}
+
+// Function to restore deleted file from a specific commit
+function restoreDeletedFile(filePath, fileName) {
+    // First, get the commit history for this file
+    fetch('/api/dataflows/' + dataflowId + '/file-commit-history?file_path=' + encodeURIComponent(filePath))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.commit_history.length > 0) {
+                showCommitSelectionModal(filePath, fileName, data.commit_history);
+            } else {
+                alert('No commit history found for this file. It may not have been committed to version control.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error getting commit history');
+        });
+}
+
+// Function to show commit selection modal
+function showCommitSelectionModal(filePath, fileName, commits) {
+    let modalHtml = `
+        <div class="modal fade" id="commitSelectionModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select Commit to Restore From</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>File:</strong> ${fileName}</p>
+                        <p><strong>Path:</strong> ${filePath}</p>
+                        <hr>
+                        <h6>Available Commits:</h6>
+                        <div class="list-group">
+    `;
+    
+    commits.forEach((commit, index) => {
+        modalHtml += `
+            <div class="list-group-item list-group-item-action" onclick="selectCommit('${filePath}', '${fileName}', '${commit.hash}', '${commit.message.replace(/'/g, "\\'")}')">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${commit.message}</h6>
+                    <small class="text-muted">${commit.hash}</small>
+                </div>
+                <small class="text-muted">Click to restore from this commit</small>
+            </div>
+        `;
+    });
+    
+    modalHtml += `
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('commitSelectionModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('commitSelectionModal'));
+    modal.show();
+}
+
+// Function to select a commit and restore the file
+function selectCommit(filePath, fileName, commitHash, commitMessage) {
+    const commitMessageInput = prompt('Enter a commit message for the restoration (optional):', `Restore ${fileName} from commit ${commitHash}`);
+    
+    if (commitMessageInput !== null) {
+        fetch('/api/dataflows/' + dataflowId + '/restore-file', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                file_path: filePath,
+                file_name: fileName,
+                commit_hash: commitHash,
+                commit_message: commitMessageInput
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 400px;';
+                alertDiv.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Success!</strong> File "${fileName}" has been restored from commit ${commitHash}.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 5000);
+                
+                // Refresh the stage data
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                alert('Error restoring file: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error restoring file');
+        });
+    }
+    
+    // Close the modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('commitSelectionModal'));
+    if (modal) {
+        modal.hide();
+    }
+}
+
+// Function to save stage with deleted files
+function saveStageWithDeletedFiles(stageName) {
+    const commitMessage = prompt('Enter a commit message for the deletion changes:', `Remove deleted files from ${stageName}`);
+    
+    if (commitMessage === null) {
+        return; // User cancelled
+    }
+    
+    if (!commitMessage.trim()) {
+        alert('Please enter a commit message');
+        return;
+    }
+    
+    // Show loading state
+    const saveButton = event.target;
+    const originalText = saveButton.innerHTML;
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+    
+    fetch('/api/dataflows/' + dataflowId + '/save-stage', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            stage_name: stageName,
+            commit_message: commitMessage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 400px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Success!</strong> Stage "${stageName}" has been saved to DataLad.
+                <br><small class="text-muted">Commit: ${commitMessage}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+            
+            // Refresh the stage data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert('Error saving stage: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving stage');
+    })
+    .finally(() => {
+        // Restore button state
+        saveButton.disabled = false;
+        saveButton.innerHTML = originalText;
+    });
+}
+</script>
+
+<!-- Stage Details Modal -->
+<div class="modal fade" id="stageDetailsModal" tabindex="-1" aria-labelledby="stageDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stageDetailsModalLabel">Stage Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Stage Information</h6>
+                        <div id="stage-info">
+                            <!-- Stage info will be populated here -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Files in Stage</h6>
+                        <div id="stage-files">
+                            <!-- Files will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="openLocationBtn">
+                    <i class="fas fa-folder-open me-2"></i>Open File Location
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

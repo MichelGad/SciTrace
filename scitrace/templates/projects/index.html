@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - SciTrace{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <i class="fas fa-folder text-primary fs-1"></i>
+            </div>
+            <div>
+                <h2 class="fw-bold mb-1">Projects</h2>
+                <p class="text-muted mb-0">Manage your research projects and datasets</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button id="resetProjectsBtn" class="btn btn-outline-danger">
+                <i class="fas fa-trash me-1"></i>
+                Reset Projects
+            </button>
+            <a href="{{ url_for('projects.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>
+                Create Project
+            </a>
+        </div>
+    </div>
+
+    <!-- Demo Projects Info -->
+    {% set has_demo_projects = false %}
+    {% for project in projects %}
+        {% if "Demo" in project.name or "Research" in project.name %}
+            {% set has_demo_projects = true %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if has_demo_projects %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>
+                    <strong>Demo Projects Available!</strong> 
+                    You have access to sample research projects with DataLad integration. 
+                    These projects demonstrate realistic research workflows and data management practices.
+                    <br><small class="text-muted mt-1">
+                        Look for projects marked with a yellow "Demo" badge to explore sample research data.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Projects Grid -->
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">{{ project.name }}</h5>
+                            <small class="text-muted">ID: {{ project.project_id }}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if "Demo" in project.name or "Research" in project.name %}
+                            <span class="badge bg-warning">Demo</span>
+                            {% endif %}
+                            <span class="badge badge-{{ 'done' if project.status == 'completed' else 'ongoing' }}">
+                                {{ project.status.title() }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text text-muted">
+                        {{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}
+                    </p>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>
+                            Admin: {{ project.admin.name }}
+                        </small>
+                    </div>
+                    
+                    {% if project.collaborators %}
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>
+                            Collaborators:
+                        </small>
+                        <div class="mt-1">
+                            {% for collaborator in project.collaborators[:3] %}
+                                <span class="badge bg-light text-dark me-1">{{ collaborator }}</span>
+                            {% endfor %}
+                            {% if project.collaborators|length > 3 %}
+                                <span class="badge bg-light text-dark">+{{ project.collaborators|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('projects.view', project_id=project.id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>
+                            View
+                        </a>
+                        <a href="{{ url_for('dataflow.project_dataflows', project_id=project.id) }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-share-alt me-1"></i>
+                            Dataflow
+                        </a>
+                        <a href="{{ url_for('projects.edit', project_id=project.id) }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-edit me-1"></i>
+                            Edit
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        Created: {{ project.created_at.strftime('%Y-%m-%d') }}
+                        {% if project.dataset_path %}
+                        <br>
+                        <i class="fas fa-folder me-1"></i>
+                        Dataset: {{ project.dataset_path.split('/')[-1] }}
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted mb-3">No projects yet</h4>
+                    <p class="text-muted mb-4">Create your first research project to get started with data management</p>
+                    <a href="{{ url_for('projects.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        Create Your First Project
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Reset Confirmation Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Confirm Reset
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">
+                    <strong>Warning:</strong> This action will permanently delete all your projects and their associated dataflows.
+                </p>
+                <p class="text-muted mb-0">
+                    This action cannot be undone. Are you sure you want to continue?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmResetBtn">
+                    <i class="fas fa-trash me-1"></i>
+                    Yes, Reset Projects
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Handle reset functionality
+    $('#confirmResetBtn').click(function() {
+        const btn = $(this);
+        const originalText = btn.html();
+        
+        console.log('Reset button clicked');
+        console.log('Reset URL:', '{{ url_for("admin_api.reset_data") }}');
+        
+        // Disable button and show loading state
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Resetting...');
+        
+        // Send reset request
+        $.ajax({
+            url: '{{ url_for("admin_api.reset_projects") }}',
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                console.log('Reset response:', response);
+                if (response.success) {
+                    // Show success message
+                    $('<div class="alert alert-success alert-dismissible fade show" role="alert">')
+                        .html(response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>')
+                        .prependTo('.container-fluid');
+                    
+                    // Close modal
+                    $('#resetModal').modal('hide');
+                    
+                    // Redirect to dashboard after a short delay
+                    setTimeout(function() {
+                        window.location.href = '{{ url_for("dashboard.index") }}';
+                    }, 1500);
+                } else {
+                    console.error('Reset failed:', response.error);
+                    alert('Error: ' + (response.error || 'Unknown error occurred'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Reset AJAX error:', {xhr: xhr, status: status, error: error});
+                let errorMsg = 'An error occurred while resetting data.';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                alert('Error: ' + errorMsg);
+            },
+            complete: function() {
+                // Re-enable button
+                btn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
