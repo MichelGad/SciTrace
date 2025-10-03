@@ -1,0 +1,1690 @@
+/**
+ * SciTrace Glass Theme (inspired by macOS 26 kit)
+ *
+ * Usage: add `theme-glass` to <body> and include this file after base styles.
+ */
+
+/* Base surface tokens and dark glass variables  */
+body.theme-glass {
+    --glass-blur: saturate(160%) blur(20px);
+    --glass-radius: 16px;
+    --glass-radius-lg: 20px;
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --glass-surface: rgba(255, 255, 255, 0.12);
+    --glass-surface-strong: rgba(17, 24, 39, 0.88);
+    --glass-border: rgba(255, 255, 255, 0.22);
+    --glass-border-soft: rgba(255, 255, 255, 0.16);
+    --glass-shadow: 0 10px 34px rgba(0, 0, 0, 0.35);
+    --glass-shadow-sm: 0 2px 14px rgba(0, 0, 0, 0.28);
+    --glass-highlight: rgba(255, 255, 255, 0.28);
+    --glass-text: #e5e7eb;
+    --glass-muted: #a1a1aa;
+    --glass-overlay-bg: rgba(17, 24, 39, 0.90);
+    --glass-overlay-text: #e5e7eb;
+    --glass-popover-bg: rgba(17, 24, 39, 0.92);
+    --glass-popover-text: #e5e7eb;
+    --glass-page-bg: radial-gradient(1200px 800px at -10% -10%, rgba(99, 102, 241, 0.20), transparent 60%),
+                     radial-gradient(1000px 700px at 110% 10%, rgba(59, 130, 246, 0.18), transparent 60%),
+                     linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+
+    background: var(--glass-page-bg);
+    color: var(--glass-text);
+}
+
+/* Sidebar */
+body.theme-glass .sidebar {
+    /* Bring back colorful sidebar while keeping glass */
+    background-color: var(--glass-surface) !important;
+    background-image:
+        radial-gradient(800px 500px at 0% 0%, rgba(59, 130, 246, 0.30), transparent 60%),
+        radial-gradient(700px 400px at 100% 0%, rgba(6, 182, 212, 0.22), transparent 60%),
+        radial-gradient(600px 400px at 50% 100%, rgba(34, 197, 94, 0.18), transparent 60%);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-soft);
+    border-radius: var(--glass-radius-lg);
+    box-shadow: var(--glass-shadow);
+    padding-top: 4px;
+}
+
+body.theme-glass .sidebar .nav-link {
+    color: var(--glass-text);
+    border-radius: 12px;
+    margin: 2px 6px;
+    padding: 10px 12px;
+}
+
+body.theme-glass .sidebar .nav-link:hover {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.18) 0%, rgba(29, 78, 216, 0.10) 100%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+body.theme-glass .sidebar .nav-link.active {
+    /* Bring back vivid active tab with multi-accent gradient */
+    background: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #22c55e 100%);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(37,99,235,0.35);
+}
+
+/* Sidebar icons follow text color; brighten on hover */
+body.theme-glass .sidebar .nav-link i { color: currentColor; opacity: 0.9; }
+body.theme-glass .sidebar .nav-link:hover i { opacity: 1; }
+
+/* Top navbar */
+body.theme-glass .top-navbar {
+    background: var(--glass-surface) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow-sm) !important;
+    border-radius: 16px;
+    margin: 8px 12px 20px 12px;
+    padding: 6px 8px;
+    position: sticky;
+    top: 8px;
+    left: 0;
+    right: 0;
+}
+
+/* Cards */
+body.theme-glass .card {
+    background: var(--glass-surface-strong) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-soft) !important;
+    border-radius: 18px !important;
+    box-shadow: var(--glass-shadow-sm) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+body.theme-glass .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--glass-border-soft);
+    position: relative;
+}
+
+/* Dropdowns */
+body.theme-glass .dropdown-menu {
+    background: var(--glass-surface-strong) !important;
+    color: var(--glass-text);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: var(--glass-shadow) !important;
+    border-radius: 14px;
+    padding: 6px;
+    transform: translateY(6px) scale(0.98);
+    opacity: 0;
+    transition: transform 140ms ease, opacity 140ms ease, box-shadow 140ms ease;
+}
+
+body.theme-glass .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-glass .dropdown-menu.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+body.theme-glass .dropdown-item {
+    color: var(--glass-text);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+}
+
+body.theme-glass .dropdown-item i { color: var(--glass-muted); }
+body.theme-glass .dropdown-item:hover i { color: var(--glass-text); }
+
+body.theme-glass .dropdown-divider { border-top-color: var(--glass-border-soft); }
+
+/* Inputs & search */
+body.theme-glass .search-box,
+body.theme-glass .form-control {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #e5e7eb !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+body.theme-glass .form-control::placeholder {
+    color: rgba(229, 231, 235, 0.65);
+}
+
+body.theme-glass .form-control:focus {
+    border-color: rgba(59, 130, 246, 0.65) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Buttons */
+body.theme-glass .btn {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.theme-glass .btn-outline-secondary {
+    color: #e5e7eb !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+body.theme-glass .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.10) !important;
+}
+
+/* Badges */
+body.theme-glass .badge {
+    background: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: 999px;
+}
+
+/* Scrollbars */
+body.theme-glass ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); }
+body.theme-glass ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); }
+
+/* Main content */
+body.theme-glass .main-content {
+    background: transparent !important;
+    color: var(--glass-text);
+}
+
+/* Improve navbar controls visibility */
+body.theme-glass .top-navbar .form-control,
+body.theme-glass .top-navbar .btn,
+body.theme-glass .top-navbar .nav-link,
+body.theme-glass .top-navbar .text-muted {
+    color: var(--glass-text) !important;
+}
+
+/* Inputs inside search box */
+body.theme-glass .search-box .form-control {
+    background: transparent !important;
+    color: var(--glass-text) !important;
+}
+
+/* Buttons: hover/active/focus/disabled & outline variants */
+/* Unified Button Behavior */
+body.theme-glass .btn {
+    border-radius: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    background-clip: padding-box;
+}
+body.theme-glass .btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1) !important;
+    background: inherit !important;
+    color: #ffffff !important;
+}
+body.theme-glass .btn:active {
+    transform: translateY(-1px);
+    filter: brightness(0.98) !important;
+    background: inherit !important;
+    color: #ffffff !important;
+}
+body.theme-glass .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.2) !important;
+}
+body.theme-glass .btn:disabled, body.theme-glass .btn.disabled {
+    opacity: 0.55 !important;
+    filter: none !important;
+}
+/* Improve button text legibility across dark/colored surfaces */
+body.theme-glass .btn,
+body.theme-glass .btn i,
+body.theme-glass .btn span,
+body.theme-glass .btn * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+}
+body.theme-glass .btn i { color: #ffffff !important; }
+
+/* Force label/icon to remain white on interactive states to avoid darkening */
+body.theme-glass .btn:hover,
+body.theme-glass .btn:active,
+body.theme-glass .btn:focus {
+    color: #ffffff !important;
+}
+body.theme-glass .btn:hover i,
+body.theme-glass .btn:active i,
+body.theme-glass .btn:focus i,
+body.theme-glass .btn:hover span,
+body.theme-glass .btn:active span,
+body.theme-glass .btn:focus span,
+body.theme-glass .btn:hover *,
+body.theme-glass .btn:active *,
+body.theme-glass .btn:focus * {
+    color: #ffffff !important;
+}
+/* Solid button variants for consistency */
+body.theme-glass .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; border-color: #1d4ed8 !important; }
+body.theme-glass .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a) !important; border-color: #16a34a !important; }
+body.theme-glass .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; border-color: #d97706 !important; color: #ffffff !important; }
+/* Removed conflicting outline button rules - now handled by unified rules above */
+
+/* Dashboard stat cards: make action buttons pop */
+/* Ensure stats card buttons use same glass style - removed inherit background to allow gradient backgrounds */
+/* Ensure outline buttons have readable text on dark glass */
+/* Variants: solid gradients with white label/icon */
+body.theme-glass .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; border-color: #1d4ed8 !important; }
+body.theme-glass .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a) !important; border-color: #16a34a !important; }
+body.theme-glass .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; border-color: #d97706 !important; }
+body.theme-glass .btn-info    { background: linear-gradient(135deg, #0ea5e9, #0284c7) !important; border-color: #0284c7 !important; }
+body.theme-glass .btn-secondary{ background: linear-gradient(135deg, #6b7280, #4b5563) !important; border-color: #4b5563 !important; }
+body.theme-glass .btn-danger  { background: linear-gradient(135deg, #ef4444, #dc2626) !important; border-color: #dc2626 !important; }
+body.theme-glass .btn-dark    { background: linear-gradient(135deg, #334155, #1f2937) !important; border-color: #1f2937 !important; }
+body.theme-glass .btn-light   { background: linear-gradient(135deg, #94a3b8, #64748b) !important; border-color: #64748b !important; }
+
+/* Outline variants behave same as solid to unify look */
+body.theme-glass .btn-outline-primary,
+body.theme-glass .btn-outline-success,
+body.theme-glass .btn-outline-warning,
+body.theme-glass .btn-outline-info,
+body.theme-glass .btn-outline-secondary,
+body.theme-glass .btn-outline-danger,
+body.theme-glass .btn-outline-dark,
+body.theme-glass .btn-outline-light {
+    color: #ffffff !important;
+}
+body.theme-glass .btn-outline-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; border-color: #1d4ed8 !important; }
+body.theme-glass .btn-outline-success { background: linear-gradient(135deg, #22c55e, #16a34a) !important; border-color: #16a34a !important; }
+body.theme-glass .btn-outline-warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; border-color: #d97706 !important; }
+body.theme-glass .btn-outline-info    { background: linear-gradient(135deg, #0ea5e9, #0284c7) !important; border-color: #0284c7 !important; }
+body.theme-glass .btn-outline-secondary{ background: linear-gradient(135deg, #6b7280, #4b5563) !important; border-color: #4b5563 !important; }
+body.theme-glass .btn-outline-danger  { background: linear-gradient(135deg, #ef4444, #dc2626) !important; border-color: #dc2626 !important; }
+body.theme-glass .btn-outline-dark    { background: linear-gradient(135deg, #334155, #1f2937) !important; border-color: #1f2937 !important; }
+body.theme-glass .btn-outline-light   { background: linear-gradient(135deg, #94a3b8, #64748b) !important; border-color: #64748b !important; }
+
+/* Hover states for outline buttons - maintain white text and consistent behavior */
+body.theme-glass .btn-outline-primary:hover,
+body.theme-glass .btn-outline-success:hover,
+body.theme-glass .btn-outline-warning:hover,
+body.theme-glass .btn-outline-info:hover,
+body.theme-glass .btn-outline-secondary:hover,
+body.theme-glass .btn-outline-danger:hover,
+body.theme-glass .btn-outline-dark:hover,
+body.theme-glass .btn-outline-light:hover {
+    color: #ffffff !important;
+    background: inherit !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass .btn-outline-primary:hover i,
+body.theme-glass .btn-outline-success:hover i,
+body.theme-glass .btn-outline-warning:hover i,
+body.theme-glass .btn-outline-info:hover i,
+body.theme-glass .btn-outline-secondary:hover i,
+body.theme-glass .btn-outline-danger:hover i,
+body.theme-glass .btn-outline-dark:hover i,
+body.theme-glass .btn-outline-light:hover i {
+    color: #ffffff !important;
+}
+
+/* Button toggle/checked states */
+body.theme-glass .btn-check:checked + .btn,
+body.theme-glass .btn.active,
+body.theme-glass .btn.show,
+body.theme-glass .btn:active {
+    filter: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -6px 12px rgba(0,0,0,0.15);
+}
+
+/* Icon colors and visibility */
+body.theme-glass i[class^="fa"],
+body.theme-glass i[class*=" fa"] {
+    color: #e5e7eb;
+}
+body.theme-glass .text-primary i { color: var(--primary-color) !important; }
+body.theme-glass .text-success i { color: var(--success-color) !important; }
+body.theme-glass .text-warning i { color: var(--warning-color) !important; }
+body.theme-glass .text-info i { color: var(--info-color) !important; }
+body.theme-glass .text-danger i { color: var(--danger-color) !important; }
+/* Muted icons should remain readable */
+body.theme-glass .text-muted i { color: #9ca3af !important; }
+
+/* Alerts */
+body.theme-glass .alert {
+    background: rgba(255, 255, 255, 0.10) !important;
+    color: #e5e7eb !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+body.theme-glass .alert a { color: #93c5fd; }
+body.theme-glass .alert.alert-warning { color: #fde68a !important; border-color: rgba(253, 230, 138, 0.35) !important; }
+body.theme-glass .alert.alert-info { color: #bae6fd !important; border-color: rgba(186, 230, 253, 0.35) !important; }
+body.theme-glass .alert.alert-success { color: #bbf7d0 !important; border-color: rgba(187, 247, 208, 0.35) !important; }
+body.theme-glass .alert.alert-danger { color: #fecaca !important; border-color: rgba(254, 202, 202, 0.35) !important; }
+
+/* Tables */
+body.theme-glass table.table { color: var(--glass-text); }
+body.theme-glass .table thead th {
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+}
+body.theme-glass .table tbody tr { border-color: rgba(255, 255, 255, 0.10); }
+body.theme-glass .table-hover tbody tr:hover { background: rgba(255, 255, 255, 0.06); }
+
+/* Modals */
+body.theme-glass .modal-content {
+    background: var(--glass-overlay-bg) !important;
+    color: var(--glass-overlay-text);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+}
+body.theme-glass .modal-header,
+body.theme-glass .modal-footer { border-color: rgba(255, 255, 255, 0.14); }
+body.theme-glass .modal-backdrop { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+
+/* Modal subtle inner highlight */
+body.theme-glass .modal-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 14%, rgba(255,255,255,0.00) 55%);
+    pointer-events: none;
+}
+
+/* Modal close button visibility */
+body.theme-glass .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+body.theme-glass .btn-close:hover { opacity: 1; }
+
+/* Modal enter transition */
+body.theme-glass .modal.fade .modal-dialog {
+    transform: translateY(-10px);
+    transition: transform 180ms ease, opacity 180ms ease;
+    opacity: 0;
+}
+body.theme-glass .modal.show .modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Stronger glass blur for backdrop in theme */
+body.theme-glass .modal-backdrop.show {
+    background-color: rgba(2, 6, 23, 0.35);
+}
+
+/* Forms */
+body.theme-glass .form-label { color: #cbd5e1; }
+body.theme-glass .form-select,
+body.theme-glass .input-group-text {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #e5e7eb !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+body.theme-glass .form-check-input {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.24);
+}
+body.theme-glass .form-check-input:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
+
+/* Navs, Pills, Tabs */
+body.theme-glass .nav-link { color: #cbd5e1; }
+body.theme-glass .nav-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+body.theme-glass .nav-pills .nav-link.active,
+body.theme-glass .nav-tabs .nav-link.active { background: rgba(255, 255, 255, 0.14); color: #fff; border-color: rgba(255, 255, 255, 0.18); }
+body.theme-glass .nav-tabs { border-bottom-color: rgba(255, 255, 255, 0.18); }
+
+/* Breadcrumbs */
+body.theme-glass .breadcrumb { background: rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 0.5rem 0.75rem; }
+body.theme-glass .breadcrumb .breadcrumb-item,
+body.theme-glass .breadcrumb .breadcrumb-item a { color: #cbd5e1; }
+body.theme-glass .breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: rgba(255, 255, 255, 0.35); }
+
+/* Pagination */
+body.theme-glass .pagination .page-link {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e5e7eb;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+body.theme-glass .pagination .page-link:hover { background: rgba(255, 255, 255, 0.10); }
+body.theme-glass .pagination .page-item.active .page-link { background: var(--primary-color); border-color: var(--primary-color); }
+
+/* Tooltips & Popovers */
+body.theme-glass .tooltip.show { opacity: 1; }
+body.theme-glass .tooltip .tooltip-inner {
+    background: var(--glass-surface-strong);
+    color: var(--glass-text);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+body.theme-glass .popover { background: rgba(17, 24, 39, 0.80); color: #e5e7eb; border: 1px solid rgba(255, 255, 255, 0.18); }
+
+/* Toasts */
+body.theme-glass .toast {
+    background: var(--glass-surface-strong);
+    color: var(--glass-text);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Progress */
+body.theme-glass .progress { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.10); }
+body.theme-glass .progress-bar { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+
+/* List groups */
+body.theme-glass .list-group-item {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e5e7eb;
+    border-color: rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    margin-bottom: 6px;
+}
+body.theme-glass .list-group-item.active { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.24); }
+
+/* Accordion */
+body.theme-glass .accordion-item { background: transparent; border-color: rgba(255, 255, 255, 0.18); }
+body.theme-glass .accordion-button { background: rgba(255, 255, 255, 0.06); color: #e5e7eb; }
+body.theme-glass .accordion-button:not(.collapsed) { background: rgba(255, 255, 255, 0.12); color: #fff; }
+body.theme-glass .accordion-button:focus { box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
+
+/* Heading polish with subtle gradient text */
+body.theme-glass h1, body.theme-glass h2, body.theme-glass h3 {
+    background: linear-gradient(180deg, #ffffff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+body.theme-glass h4, body.theme-glass h5, body.theme-glass h6 { color: #e5e7eb; }
+
+/* Chip style for small labels */
+body.theme-glass .chip, body.theme-glass .label-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #e5e7eb;
+    backdrop-filter: var(--glass-blur);
+}
+
+/* Links & muted text for dark glass */
+body.theme-glass a { color: #93c5fd; }
+body.theme-glass .text-muted { color: #9ca3af !important; }
+
+/* ========================================
+   LIGHT THEME STYLES
+   ======================================== */
+
+/* Light theme variables */
+body.theme-glass.theme-light {
+    --glass-blur: saturate(180%) blur(20px);
+    --glass-radius: 16px;
+    --glass-radius-lg: 20px;
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --glass-surface: rgba(255, 255, 255, 0.85);
+    --glass-surface-strong: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-soft: rgba(0, 0, 0, 0.06);
+    --glass-shadow: 0 10px 34px rgba(0, 0, 0, 0.12);
+    --glass-shadow-sm: 0 2px 14px rgba(0, 0, 0, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.9);
+    --glass-text: #1f2937;
+    --glass-muted: #6b7280;
+    --glass-overlay-bg: rgba(255, 255, 255, 0.95);
+    --glass-overlay-text: #1f2937;
+    --glass-popover-bg: rgba(255, 255, 255, 0.98);
+    --glass-popover-text: #1f2937;
+    --glass-page-bg: radial-gradient(1200px 800px at -10% -10%, rgba(59, 130, 246, 0.08), transparent 60%),
+                     radial-gradient(1000px 700px at 110% 10%, rgba(16, 185, 129, 0.06), transparent 60%),
+                     linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+
+    background: var(--glass-page-bg);
+    color: var(--glass-text);
+}
+
+/* Light theme sidebar */
+body.theme-glass.theme-light .sidebar {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(245, 158, 11, 0.06) 100%), var(--glass-surface) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-soft);
+    border-radius: var(--glass-radius-lg);
+    box-shadow: var(--glass-shadow);
+    padding-top: 4px;
+}
+
+body.theme-glass.theme-light .sidebar .nav-link {
+    color: var(--glass-text);
+    border-radius: 12px;
+    margin: 2px 6px;
+    padding: 10px 12px;
+}
+
+body.theme-glass.theme-light .sidebar .nav-link:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(16, 185, 129, 0.10) 100%);
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+body.theme-glass.theme-light .sidebar .nav-link.active {
+    background: linear-gradient(135deg, #2563eb 0%, #10b981 50%, #f59e0b 100%);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+}
+
+/* Light theme top navbar */
+body.theme-glass.theme-light .top-navbar {
+    background: var(--glass-surface) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow-sm) !important;
+    border-radius: 16px;
+    margin: 8px 12px 20px 12px;
+    padding: 6px 8px;
+    position: sticky;
+    top: 8px;
+    left: 0;
+    right: 0;
+}
+
+/* Light theme cards */
+body.theme-glass.theme-light .card {
+    background: var(--glass-surface-strong) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border-soft) !important;
+    border-radius: 18px !important;
+    box-shadow: var(--glass-shadow-sm) !important;
+    overflow: hidden;
+    position: relative;
+}
+
+body.theme-glass.theme-light .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--glass-border-soft);
+    position: relative;
+}
+
+/* Light theme dropdowns */
+body.theme-glass.theme-light .dropdown-menu {
+    background: var(--glass-surface-strong) !important;
+    color: var(--glass-text);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow) !important;
+    border-radius: 14px;
+    padding: 6px;
+    transform: translateY(6px) scale(0.98);
+    opacity: 0;
+    transition: transform 140ms ease, opacity 140ms ease, box-shadow 140ms ease;
+}
+
+body.theme-glass.theme-light .dropdown-item:hover {
+    background-color: rgba(59, 130, 246, 0.08);
+}
+
+body.theme-glass.theme-light .dropdown-menu.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+body.theme-glass.theme-light .dropdown-item {
+    color: var(--glass-text);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+}
+
+body.theme-glass.theme-light .dropdown-item i { color: var(--glass-muted); }
+body.theme-glass.theme-light .dropdown-item:hover i { color: var(--glass-text); }
+
+body.theme-glass.theme-light .dropdown-divider { border-top-color: var(--glass-border-soft); }
+
+/* Light theme inputs & search */
+body.theme-glass.theme-light .search-box,
+body.theme-glass.theme-light .form-control {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: var(--glass-text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+body.theme-glass.theme-light .form-control::placeholder {
+    color: var(--glass-muted);
+}
+
+body.theme-glass.theme-light .form-control:focus {
+    border-color: rgba(37, 99, 235, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Light theme buttons - inherit dark theme button styles exactly */
+/* No light theme specific button overrides - use dark theme buttons */
+
+
+
+
+/* Remove all inherit background rules to prevent white hover effects */
+
+/* Comprehensive button hover fix - prevent white backgrounds and ensure solid gradients */
+body.theme-glass.theme-light .btn:hover,
+body.theme-glass.theme-light .btn:active,
+body.theme-glass.theme-light .btn:focus,
+body.theme-glass.theme-light .btn-primary:hover,
+body.theme-glass.theme-light .btn-success:hover,
+body.theme-glass.theme-light .btn-warning:hover,
+body.theme-glass.theme-light .btn-info:hover,
+body.theme-glass.theme-light .btn-secondary:hover,
+body.theme-glass.theme-light .btn-danger:hover,
+body.theme-glass.theme-light .btn-dark:hover,
+body.theme-glass.theme-light .btn-light:hover,
+body.theme-glass.theme-light .btn-outline-primary:hover,
+body.theme-glass.theme-light .btn-outline-success:hover,
+body.theme-glass.theme-light .btn-outline-warning:hover,
+body.theme-glass.theme-light .btn-outline-info:hover,
+body.theme-glass.theme-light .btn-outline-secondary:hover,
+body.theme-glass.theme-light .btn-outline-danger:hover,
+body.theme-glass.theme-light .btn-outline-dark:hover,
+body.theme-glass.theme-light .btn-outline-light:hover {
+    opacity: 1 !important;
+    background-clip: padding-box !important;
+}
+
+/* Universal button consistency override - ensure all buttons look the same */
+body.theme-glass.theme-light .btn,
+body.theme-glass.theme-light .btn-primary,
+body.theme-glass.theme-light .btn-success,
+body.theme-glass.theme-light .btn-warning,
+body.theme-glass.theme-light .btn-info,
+body.theme-glass.theme-light .btn-secondary,
+body.theme-glass.theme-light .btn-danger,
+body.theme-glass.theme-light .btn-dark,
+body.theme-glass.theme-light .btn-light,
+body.theme-glass.theme-light .btn-outline-primary,
+body.theme-glass.theme-light .btn-outline-success,
+body.theme-glass.theme-light .btn-outline-warning,
+body.theme-glass.theme-light .btn-outline-info,
+body.theme-glass.theme-light .btn-outline-secondary,
+body.theme-glass.theme-light .btn-outline-danger,
+body.theme-glass.theme-light .btn-outline-dark,
+body.theme-glass.theme-light .btn-outline-light {
+    border-radius: 14px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-clip: padding-box !important;
+    opacity: 1 !important;
+    background-image: none !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Consistent hover behavior for all light theme buttons */
+body.theme-glass.theme-light .btn:hover,
+body.theme-glass.theme-light .btn-primary:hover,
+body.theme-glass.theme-light .btn-success:hover,
+body.theme-glass.theme-light .btn-warning:hover,
+body.theme-glass.theme-light .btn-info:hover,
+body.theme-glass.theme-light .btn-secondary:hover,
+body.theme-glass.theme-light .btn-danger:hover,
+body.theme-glass.theme-light .btn-dark:hover,
+body.theme-glass.theme-light .btn-light:hover,
+body.theme-glass.theme-light .btn-outline-primary:hover,
+body.theme-glass.theme-light .btn-outline-success:hover,
+body.theme-glass.theme-light .btn-outline-warning:hover,
+body.theme-glass.theme-light .btn-outline-info:hover,
+body.theme-glass.theme-light .btn-outline-secondary:hover,
+body.theme-glass.theme-light .btn-outline-danger:hover,
+body.theme-glass.theme-light .btn-outline-dark:hover,
+body.theme-glass.theme-light .btn-outline-light:hover {
+    transform: translateY(-2px) !important;
+    filter: brightness(1.1) !important;
+}
+
+
+body.theme-glass.theme-light .btn:active {
+    transform: translateY(-1px);
+    filter: brightness(0.98) !important;
+}
+
+body.theme-glass.theme-light .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15) !important;
+}
+
+body.theme-glass.theme-light .btn:disabled, 
+body.theme-glass.theme-light .btn.disabled {
+    opacity: 0.55 !important;
+    filter: none !important;
+}
+
+/* Light theme button text - ensure proper contrast for all button types */
+body.theme-glass.theme-light .btn {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body.theme-glass.theme-light .btn i {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn span,
+body.theme-glass.theme-light .btn * {
+    color: #ffffff !important;
+}
+
+/* Light theme button hover states */
+body.theme-glass.theme-light .btn:hover,
+body.theme-glass.theme-light .btn:active,
+body.theme-glass.theme-light .btn:focus {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn:hover i,
+body.theme-glass.theme-light .btn:active i,
+body.theme-glass.theme-light .btn:focus i,
+body.theme-glass.theme-light .btn:hover span,
+body.theme-glass.theme-light .btn:active span,
+body.theme-glass.theme-light .btn:focus span,
+body.theme-glass.theme-light .btn:hover *,
+body.theme-glass.theme-light .btn:active *,
+body.theme-glass.theme-light .btn:focus * {
+    color: #ffffff !important;
+}
+
+/* Override for colored buttons to use white text */
+body.theme-glass.theme-light .btn-primary,
+body.theme-glass.theme-light .btn-primary i,
+body.theme-glass.theme-light .btn-primary span,
+body.theme-glass.theme-light .btn-primary *,
+body.theme-glass.theme-light .btn-success,
+body.theme-glass.theme-light .btn-success i,
+body.theme-glass.theme-light .btn-success span,
+body.theme-glass.theme-light .btn-success *,
+body.theme-glass.theme-light .btn-info,
+body.theme-glass.theme-light .btn-info i,
+body.theme-glass.theme-light .btn-info span,
+body.theme-glass.theme-light .btn-info *,
+body.theme-glass.theme-light .btn-secondary,
+body.theme-glass.theme-light .btn-secondary i,
+body.theme-glass.theme-light .btn-secondary span,
+body.theme-glass.theme-light .btn-secondary *,
+body.theme-glass.theme-light .btn-danger,
+body.theme-glass.theme-light .btn-danger i,
+body.theme-glass.theme-light .btn-danger span,
+body.theme-glass.theme-light .btn-danger *,
+body.theme-glass.theme-light .btn-dark,
+body.theme-glass.theme-light .btn-dark i,
+body.theme-glass.theme-light .btn-dark span,
+body.theme-glass.theme-light .btn-dark * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Hover states for colored buttons */
+body.theme-glass.theme-light .btn-primary:hover,
+body.theme-glass.theme-light .btn-primary:active,
+body.theme-glass.theme-light .btn-primary:focus,
+body.theme-glass.theme-light .btn-success:hover,
+body.theme-glass.theme-light .btn-success:active,
+body.theme-glass.theme-light .btn-success:focus,
+body.theme-glass.theme-light .btn-info:hover,
+body.theme-glass.theme-light .btn-info:active,
+body.theme-glass.theme-light .btn-info:focus,
+body.theme-glass.theme-light .btn-secondary:hover,
+body.theme-glass.theme-light .btn-secondary:active,
+body.theme-glass.theme-light .btn-secondary:focus,
+body.theme-glass.theme-light .btn-danger:hover,
+body.theme-glass.theme-light .btn-danger:active,
+body.theme-glass.theme-light .btn-danger:focus,
+body.theme-glass.theme-light .btn-dark:hover,
+body.theme-glass.theme-light .btn-dark:active,
+body.theme-glass.theme-light .btn-dark:focus {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-primary:hover i,
+body.theme-glass.theme-light .btn-primary:active i,
+body.theme-glass.theme-light .btn-primary:focus i,
+body.theme-glass.theme-light .btn-success:hover i,
+body.theme-glass.theme-light .btn-success:active i,
+body.theme-glass.theme-light .btn-success:focus i,
+body.theme-glass.theme-light .btn-info:hover i,
+body.theme-glass.theme-light .btn-info:active i,
+body.theme-glass.theme-light .btn-info:focus i,
+body.theme-glass.theme-light .btn-secondary:hover i,
+body.theme-glass.theme-light .btn-secondary:active i,
+body.theme-glass.theme-light .btn-secondary:focus i,
+body.theme-glass.theme-light .btn-danger:hover i,
+body.theme-glass.theme-light .btn-danger:active i,
+body.theme-glass.theme-light .btn-danger:focus i,
+body.theme-glass.theme-light .btn-dark:hover i,
+body.theme-glass.theme-light .btn-dark:active i,
+body.theme-glass.theme-light .btn-dark:focus i {
+    color: #ffffff !important;
+}
+
+/* All buttons use white text for consistency */
+body.theme-glass.theme-light .btn-warning,
+body.theme-glass.theme-light .btn-warning i,
+body.theme-glass.theme-light .btn-warning span,
+body.theme-glass.theme-light .btn-warning *,
+body.theme-glass.theme-light .btn-light,
+body.theme-glass.theme-light .btn-light i,
+body.theme-glass.theme-light .btn-light span,
+body.theme-glass.theme-light .btn-light * {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body.theme-glass.theme-light .btn-warning:hover,
+body.theme-glass.theme-light .btn-warning:active,
+body.theme-glass.theme-light .btn-warning:focus,
+body.theme-glass.theme-light .btn-light:hover,
+body.theme-glass.theme-light .btn-light:active,
+body.theme-glass.theme-light .btn-light:focus {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-warning:hover i,
+body.theme-glass.theme-light .btn-warning:active i,
+body.theme-glass.theme-light .btn-warning:focus i,
+body.theme-glass.theme-light .btn-light:hover i,
+body.theme-glass.theme-light .btn-light:active i,
+body.theme-glass.theme-light .btn-light:focus i {
+    color: #ffffff !important;
+}
+
+/* Light theme solid button variants - lighter, more subtle colors */
+body.theme-glass.theme-light .btn-primary { 
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important; 
+    border-color: #2563eb !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-success { 
+    background: linear-gradient(135deg, #34d399, #22c55e) !important; 
+    border-color: #22c55e !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-warning { 
+    background: linear-gradient(135deg, #fbbf24, #f59e0b) !important; 
+    border-color: #f59e0b !important; 
+    color: #1f2937 !important; 
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-info { 
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important; 
+    border-color: #0ea5e9 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-secondary { 
+    background: linear-gradient(135deg, #94a3b8, #6b7280) !important; 
+    border-color: #6b7280 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(148, 163, 184, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-danger { 
+    background: linear-gradient(135deg, #f87171, #ef4444) !important; 
+    border-color: #ef4444 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(248, 113, 113, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-dark { 
+    background: linear-gradient(135deg, #64748b, #334155) !important; 
+    border-color: #334155 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-light { 
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important; 
+    border-color: #e2e8f0 !important; 
+    color: #1f2937 !important; 
+    box-shadow: 0 4px 12px rgba(248, 250, 252, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Light theme outline buttons - ensure proper contrast and visibility */
+body.theme-glass.theme-light .btn-outline-primary { 
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important; 
+    border-color: #2563eb !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+body.theme-glass.theme-light .btn-outline-primary i,
+body.theme-glass.theme-light .btn-outline-primary span,
+body.theme-glass.theme-light .btn-outline-primary * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-success { 
+    background: linear-gradient(135deg, #34d399, #22c55e) !important; 
+    border-color: #22c55e !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-success i,
+body.theme-glass.theme-light .btn-outline-success span,
+body.theme-glass.theme-light .btn-outline-success * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-warning { 
+    background: linear-gradient(135deg, #fbbf24, #f59e0b) !important; 
+    border-color: #f59e0b !important; 
+    color: #1f2937 !important; 
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-warning i,
+body.theme-glass.theme-light .btn-outline-warning span,
+body.theme-glass.theme-light .btn-outline-warning * {
+    color: #1f2937 !important;
+}
+
+body.theme-glass.theme-light .btn-outline-info { 
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important; 
+    border-color: #0ea5e9 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-info i,
+body.theme-glass.theme-light .btn-outline-info span,
+body.theme-glass.theme-light .btn-outline-info * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-secondary { 
+    background: linear-gradient(135deg, #94a3b8, #6b7280) !important; 
+    border-color: #6b7280 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-secondary i,
+body.theme-glass.theme-light .btn-outline-secondary span,
+body.theme-glass.theme-light .btn-outline-secondary * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-danger { 
+    background: linear-gradient(135deg, #f87171, #ef4444) !important; 
+    border-color: #ef4444 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-danger i,
+body.theme-glass.theme-light .btn-outline-danger span,
+body.theme-glass.theme-light .btn-outline-danger * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-dark { 
+    background: linear-gradient(135deg, #64748b, #334155) !important; 
+    border-color: #334155 !important; 
+    color: #ffffff !important; 
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-dark i,
+body.theme-glass.theme-light .btn-outline-dark span,
+body.theme-glass.theme-light .btn-outline-dark * {
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .btn-outline-light { 
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important; 
+    border-color: #e2e8f0 !important; 
+    color: #1f2937 !important; 
+    box-shadow: 0 4px 12px rgba(248, 250, 252, 0.3) !important;
+}
+body.theme-glass.theme-light .btn-outline-light i,
+body.theme-glass.theme-light .btn-outline-light span,
+body.theme-glass.theme-light .btn-outline-light * {
+    color: #1f2937 !important;
+}
+
+/* Light theme hover states for outline buttons - maintain solid gradients */
+body.theme-glass.theme-light .btn-outline-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-success:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+    border-color: #16a34a !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(52, 211, 153, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-warning:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    border-color: #d97706 !important;
+    color: #1f2937 !important;
+    box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-info:hover {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+    border-color: #0284c7 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+    border-color: #4b5563 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(148, 163, 184, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-danger:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(248, 113, 113, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-dark:hover {
+    background: linear-gradient(135deg, #334155, #1f2937) !important;
+    border-color: #1f2937 !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(100, 116, 139, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+body.theme-glass.theme-light .btn-outline-light:hover {
+    background: linear-gradient(135deg, #e2e8f0, #d1d5db) !important;
+    border-color: #d1d5db !important;
+    color: #1f2937 !important;
+    box-shadow: 0 6px 16px rgba(248, 250, 252, 0.4) !important;
+    filter: brightness(1.1) !important;
+}
+
+/* Light theme outline button icons */
+body.theme-glass.theme-light .btn-outline-primary:hover i,
+body.theme-glass.theme-light .btn-outline-success:hover i,
+body.theme-glass.theme-light .btn-outline-warning:hover i,
+body.theme-glass.theme-light .btn-outline-info:hover i,
+body.theme-glass.theme-light .btn-outline-secondary:hover i,
+body.theme-glass.theme-light .btn-outline-danger:hover i,
+body.theme-glass.theme-light .btn-outline-dark:hover i,
+body.theme-glass.theme-light .btn-outline-light:hover i {
+    color: inherit !important;
+}
+
+/* Light theme badges */
+body.theme-glass.theme-light .badge {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: 999px;
+    color: var(--glass-text) !important;
+}
+
+/* Light theme alerts */
+body.theme-glass.theme-light .alert {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--glass-text) !important;
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+body.theme-glass.theme-light .alert a { color: #2563eb; }
+body.theme-glass.theme-light .alert.alert-warning { color: #92400e !important; border-color: rgba(245, 158, 11, 0.3) !important; }
+body.theme-glass.theme-light .alert.alert-info { color: #0369a1 !important; border-color: rgba(14, 165, 233, 0.3) !important; }
+body.theme-glass.theme-light .alert.alert-success { color: #065f46 !important; border-color: rgba(34, 197, 94, 0.3) !important; }
+body.theme-glass.theme-light .alert.alert-danger { color: #991b1b !important; border-color: rgba(239, 68, 68, 0.3) !important; }
+
+/* Light theme tables */
+body.theme-glass.theme-light table.table { color: var(--glass-text); }
+body.theme-glass.theme-light .table thead th {
+    background: rgba(255, 255, 255, 0.6);
+    border-bottom-color: var(--glass-border);
+}
+body.theme-glass.theme-light .table tbody tr { border-color: var(--glass-border-soft); }
+body.theme-glass.theme-light .table-hover tbody tr:hover { background: rgba(59, 130, 246, 0.05); }
+
+/* Light theme modals */
+body.theme-glass.theme-light .modal-content {
+    background: var(--glass-overlay-bg) !important;
+    color: var(--glass-overlay-text);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+}
+
+body.theme-glass.theme-light .modal-header,
+body.theme-glass.theme-light .modal-footer { border-color: var(--glass-border-soft); }
+body.theme-glass.theme-light .modal-backdrop { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+
+/* Light theme modal inner highlight */
+body.theme-glass.theme-light .modal-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 14%, rgba(255,255,255,0.00) 55%);
+    pointer-events: none;
+}
+
+/* Light theme modal close button */
+body.theme-glass.theme-light .btn-close {
+    filter: none;
+    opacity: 0.6;
+}
+body.theme-glass.theme-light .btn-close:hover { opacity: 1; }
+
+/* Light theme forms */
+body.theme-glass.theme-light .form-label { color: var(--glass-text); }
+body.theme-glass.theme-light .form-select,
+body.theme-glass.theme-light .input-group-text {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: var(--glass-text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+body.theme-glass.theme-light .form-check-input {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-color: var(--glass-border);
+}
+body.theme-glass.theme-light .form-check-input:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
+
+/* Light theme navs, pills, tabs */
+body.theme-glass.theme-light .nav-link { color: var(--glass-text); }
+body.theme-glass.theme-light .nav-link:hover { color: var(--primary-color); background: rgba(59, 130, 246, 0.08); }
+body.theme-glass.theme-light .nav-pills .nav-link.active,
+body.theme-glass.theme-light .nav-tabs .nav-link.active { background: rgba(37, 99, 235, 0.15); color: var(--primary-color); border-color: rgba(37, 99, 235, 0.2); }
+body.theme-glass.theme-light .nav-tabs { border-bottom-color: var(--glass-border); }
+
+/* Light theme breadcrumbs */
+body.theme-glass.theme-light .breadcrumb { background: rgba(255, 255, 255, 0.7); border-radius: 12px; padding: 0.5rem 0.75rem; }
+body.theme-glass.theme-light .breadcrumb .breadcrumb-item,
+body.theme-glass.theme-light .breadcrumb .breadcrumb-item a { color: var(--glass-text); }
+body.theme-glass.theme-light .breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: var(--glass-muted); }
+
+/* Light theme pagination */
+body.theme-glass.theme-light .pagination .page-link {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--glass-text);
+    border-color: var(--glass-border);
+}
+body.theme-glass.theme-light .pagination .page-link:hover { background: rgba(59, 130, 246, 0.08); }
+body.theme-glass.theme-light .pagination .page-item.active .page-link { background: var(--primary-color); border-color: var(--primary-color); }
+
+/* Light theme tooltips & popovers */
+body.theme-glass.theme-light .tooltip.show { opacity: 1; }
+body.theme-glass.theme-light .tooltip .tooltip-inner {
+    background: var(--glass-surface-strong);
+    color: var(--glass-text);
+    border: 1px solid var(--glass-border);
+}
+body.theme-glass.theme-light .popover { background: rgba(255, 255, 255, 0.95); color: var(--glass-text); border: 1px solid var(--glass-border); }
+
+/* Light theme toasts */
+body.theme-glass.theme-light .toast {
+    background: var(--glass-surface-strong);
+    color: var(--glass-text);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Light theme progress */
+body.theme-glass.theme-light .progress { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--glass-border); }
+body.theme-glass.theme-light .progress-bar { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); }
+
+/* Light theme list groups */
+body.theme-glass.theme-light .list-group-item {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--glass-text);
+    border-color: var(--glass-border);
+    border-radius: 12px;
+    margin-bottom: 6px;
+}
+body.theme-glass.theme-light .list-group-item.active { background: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.2); }
+
+/* Light theme accordion */
+body.theme-glass.theme-light .accordion-item { background: transparent; border-color: var(--glass-border); }
+body.theme-glass.theme-light .accordion-button { background: rgba(255, 255, 255, 0.7); color: var(--glass-text); }
+body.theme-glass.theme-light .accordion-button:not(.collapsed) { background: rgba(37, 99, 235, 0.08); color: var(--primary-color); }
+body.theme-glass.theme-light .accordion-button:focus { box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15); }
+
+/* Light theme headings */
+body.theme-glass.theme-light h1, 
+body.theme-glass.theme-light h2, 
+body.theme-glass.theme-light h3 {
+    background: linear-gradient(180deg, #1f2937, #374151);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+body.theme-glass.theme-light h4, 
+body.theme-glass.theme-light h5, 
+body.theme-glass.theme-light h6 { color: var(--glass-text); }
+
+/* Light theme chips */
+body.theme-glass.theme-light .chip, 
+body.theme-glass.theme-light .label-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* Light theme links & muted text */
+body.theme-glass.theme-light a { color: #2563eb; }
+body.theme-glass.theme-light .text-muted { color: var(--glass-muted) !important; }
+
+/* Light theme scrollbars */
+body.theme-glass.theme-light ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.02); }
+body.theme-glass.theme-light ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
+
+/* Light theme main content */
+body.theme-glass.theme-light .main-content {
+    background: transparent !important;
+    color: var(--glass-text);
+}
+
+/* Light theme navbar controls */
+body.theme-glass.theme-light .top-navbar .form-control,
+body.theme-glass.theme-light .top-navbar .btn,
+body.theme-glass.theme-light .top-navbar .nav-link,
+body.theme-glass.theme-light .top-navbar .text-muted {
+    color: var(--glass-text) !important;
+}
+
+/* Light theme search box */
+body.theme-glass.theme-light .search-box .form-control {
+    background: transparent !important;
+    color: var(--glass-text) !important;
+}
+
+/* Light theme icon colors */
+body.theme-glass.theme-light i[class^="fa"],
+body.theme-glass.theme-light i[class*=" fa"] {
+    color: var(--glass-text);
+}
+body.theme-glass.theme-light .text-primary i { color: var(--primary-color) !important; }
+body.theme-glass.theme-light .text-success i { color: #22c55e !important; }
+body.theme-glass.theme-light .text-warning i { color: #f59e0b !important; }
+body.theme-glass.theme-light .text-info i { color: #0ea5e9 !important; }
+body.theme-glass.theme-light .text-danger i { color: #ef4444 !important; }
+body.theme-glass.theme-light .text-muted i { color: var(--glass-muted) !important; }
+
+/* ========================================
+   ADDITIONAL LIGHT THEME OVERRIDES
+   ======================================== */
+
+/* Override any remaining dark theme elements */
+body.theme-glass.theme-light * {
+    color: inherit;
+}
+
+/* Light theme navbar brand and logo */
+body.theme-glass.theme-light .navbar-brand,
+body.theme-glass.theme-light .navbar-brand .brand-text {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .navbar-brand .logo-icon svg {
+    fill: var(--glass-text) !important;
+}
+
+/* Light theme sidebar brand */
+body.theme-glass.theme-light .sidebar .navbar-brand,
+body.theme-glass.theme-light .sidebar .navbar-brand .brand-text {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .sidebar .navbar-brand .logo-icon svg {
+    fill: var(--glass-text) !important;
+}
+
+/* Light theme sidebar icons */
+body.theme-glass.theme-light .sidebar .nav-link i {
+    color: currentColor !important;
+}
+
+/* Light theme user profile elements */
+body.theme-glass.theme-light .user-profile .nav-link,
+body.theme-glass.theme-light .user-profile .nav-link .fw-bold,
+body.theme-glass.theme-light .user-profile .nav-link small {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .user-avatar {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+/* Light theme notification bell */
+body.theme-glass.theme-light .notification-bell i {
+    color: var(--glass-muted) !important;
+}
+
+body.theme-glass.theme-light .notification-badge {
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+/* Light theme search input */
+body.theme-glass.theme-light #globalSearchInput {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light #globalSearchInput::placeholder {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme navbar toggler */
+body.theme-glass.theme-light .navbar-toggler {
+    border-color: var(--glass-border) !important;
+}
+
+body.theme-glass.theme-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2831, 41, 55, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Light theme flash messages */
+body.theme-glass.theme-light .alert {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .alert.alert-success {
+    background: rgba(34, 197, 94, 0.1) !important;
+    border-color: rgba(34, 197, 94, 0.3) !important;
+    color: #065f46 !important;
+}
+
+body.theme-glass.theme-light .alert.alert-danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #991b1b !important;
+}
+
+body.theme-glass.theme-light .alert.alert-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    color: #92400e !important;
+}
+
+body.theme-glass.theme-light .alert.alert-info {
+    background: rgba(14, 165, 233, 0.1) !important;
+    border-color: rgba(14, 165, 233, 0.3) !important;
+    color: #0369a1 !important;
+}
+
+/* Light theme close buttons */
+body.theme-glass.theme-light .btn-close {
+    filter: none !important;
+    opacity: 0.6;
+}
+
+body.theme-glass.theme-light .btn-close:hover {
+    opacity: 1;
+}
+
+/* Light theme stats cards */
+body.theme-glass.theme-light .stats-card {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+}
+
+body.theme-glass.theme-light .stats-card .card-body {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .stats-card h3 {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .stats-card .text-muted {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme project cards */
+body.theme-glass.theme-light .card .card-title {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .card .card-text {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme badges in cards */
+body.theme-glass.theme-light .card .badge {
+    color: var(--glass-text) !important;
+}
+
+/* Light theme task rows */
+body.theme-glass.theme-light .task-row {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .task-row h6 {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .task-row .text-muted {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme empty states */
+body.theme-glass.theme-light .empty-state i {
+    color: var(--glass-muted) !important;
+}
+
+body.theme-glass.theme-light .empty-state p {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme git log specific overrides */
+body.theme-glass.theme-light .gitlog-root {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .gitlog-root .text-muted,
+body.theme-glass.theme-light .gitlog-root .commit-author-name,
+body.theme-glass.theme-light .gitlog-root .commit-message,
+body.theme-glass.theme-light .gitlog-root .file-path,
+body.theme-glass.theme-light .gitlog-root .file-tree-item,
+body.theme-glass.theme-light .gitlog-root .diff-content,
+body.theme-glass.theme-light .gitlog-root .diff-line,
+body.theme-glass.theme-light .gitlog-root .diff-header-line,
+body.theme-glass.theme-light .gitlog-root .no-commits h4,
+body.theme-glass.theme-light .gitlog-root .no-commits p {
+    color: var(--glass-text) !important;
+}
+
+/* Light theme commit history panel */
+body.theme-glass.theme-light .commit-history-panel {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .commit-detail-panel {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .file-tree-panel {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .diff-panel {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+    color: var(--glass-text) !important;
+}
+
+/* Light theme action buttons */
+body.theme-glass.theme-light .action-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* Light theme login page overrides */
+body.theme-glass.theme-light .login-container {
+    background: var(--glass-surface-strong) !important;
+    border: 1px solid var(--glass-border-soft) !important;
+}
+
+body.theme-glass.theme-light .login-header {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .login-header h2 {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .login-header p {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme demo info */
+body.theme-glass.theme-light .demo-info {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #0369a1 !important;
+}
+
+/* Light theme priority badges */
+body.theme-glass.theme-light .badge-priority-high {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .badge-priority-medium {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .badge-priority-low {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+    color: #ffffff !important;
+}
+
+/* Light theme status badges */
+body.theme-glass.theme-light .badge-status-done {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .badge-status-ongoing {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+}
+
+body.theme-glass.theme-light .badge-status-todo {
+    background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+    color: #ffffff !important;
+}
+
+/* Light theme demo badges */
+body.theme-glass.theme-light .badge-demo {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: #ffffff !important;
+}
+
+/* Light theme form labels and inputs */
+body.theme-glass.theme-light .form-label {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .form-control:not(:focus) {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: var(--glass-text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+body.theme-glass.theme-light .form-select {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: var(--glass-text) !important;
+    border: 1px solid var(--glass-border) !important;
+}
+
+/* Light theme text utilities */
+body.theme-glass.theme-light .text-white {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .text-dark {
+    color: var(--glass-text) !important;
+}
+
+body.theme-glass.theme-light .text-light {
+    color: var(--glass-muted) !important;
+}
+
+/* Light theme background utilities */
+body.theme-glass.theme-light .bg-dark {
+    background: var(--glass-surface-strong) !important;
+}
+
+body.theme-glass.theme-light .bg-light {
+    background: var(--glass-surface) !important;
+}
+
+/* Light theme border utilities */
+body.theme-glass.theme-light .border {
+    border-color: var(--glass-border) !important;
+}
+
+body.theme-glass.theme-light .border-dark {
+    border-color: var(--glass-border) !important;
+}
+
+/* Light theme shadow utilities */
+body.theme-glass.theme-light .shadow {
+    box-shadow: var(--glass-shadow-sm) !important;
+}
+
+body.theme-glass.theme-light .shadow-sm {
+    box-shadow: var(--glass-shadow-sm) !important;
+}
+
+body.theme-glass.theme-light .shadow-lg {
+    box-shadow: var(--glass-shadow) !important;
+}
+
+

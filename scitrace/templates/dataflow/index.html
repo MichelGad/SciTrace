@@ -76,14 +76,14 @@
                     {% endif %}
                     
                     <div class="d-flex gap-2">
-                        <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ url_for('dataflow.view', dataflow_id=dataflow.id) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-folder-tree me-1"></i>
                             Repo View
                         </a>
-                        <a href="{{ url_for('dataflow.git_log', dataflow_id=dataflow.id) }}" class="btn btn-outline-warning btn-sm" style="border-color: #f05032; color: #f05032;">
+                        <a href="{{ url_for('dataflow.git_log', dataflow_id=dataflow.id) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-code-branch me-1"></i>Git Log
                         </a>
-                        <a href="{{ url_for('dataflow.lifecycle_view', dataflow_id=dataflow.id) }}" class="btn btn-outline-success btn-sm">
+                        <a href="{{ url_for('dataflow.lifecycle_view', dataflow_id=dataflow.id) }}" class="btn btn-success btn-sm">
                             <i class="fas fa-sitemap me-1"></i>
                             Data Lifecycle
                         </a>

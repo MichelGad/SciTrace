@@ -123,12 +123,12 @@
         .navbar-brand .logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #22c55e 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
             position: relative;
             overflow: hidden;
         }
@@ -158,7 +158,7 @@
         }
         
         .navbar-brand .brand-text {
-            background: linear-gradient(135deg, var(--white) 0%, rgba(255, 255, 255, 0.9) 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #22c55e 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -612,9 +612,12 @@
         }
     </style>
     
+    <!-- SciTrace Glass Theme (served from assets/) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/glass.css') }}?v=18">
+    
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="theme-glass">
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="px-4 pt-4 pb-4">
@@ -684,16 +687,16 @@
                             </button>
                             
                             <div class="d-flex align-items-center me-3">
-                                <button class="btn btn-outline-secondary btn-sm me-2">
+                                <button id="btnBack" class="btn btn-outline-secondary btn-sm me-2" type="button">
                                     <i class="fas fa-arrow-left"></i>
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm me-3">
+                                <button id="btnForward" class="btn btn-outline-secondary btn-sm me-3" type="button">
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
                             
                             <div class="search-box me-3">
-                                <input type="text" class="form-control border-0 bg-transparent" placeholder="Search..." style="width: 300px;">
+                                <input id="globalSearchInput" type="text" class="form-control border-0 bg-transparent" placeholder="Search..." style="width: 300px;">
                             </div>
                         </div>
                         
@@ -725,6 +728,20 @@
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <div class="dropdown-item d-flex align-items-center justify-content-between" style="cursor: default;">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-palette me-2"></i>
+                                                <span>Theme</span>
+                                            </div>
+                                            <div class="theme-toggle">
+                                                <button class="btn btn-sm btn-outline-secondary" id="themeToggle" onclick="toggleTheme()">
+                                                    <i class="fas fa-moon" id="themeIcon"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="#" onclick="resetAllDataFromDropdown()"><i class="fas fa-trash me-2"></i>Reset All Data</a></li>
                                     <li><hr class="dropdown-divider"></li>
@@ -797,6 +814,31 @@
         }
     }
     
+    // Global navigation and search handlers
+    document.addEventListener('DOMContentLoaded', function () {
+        var backBtn = document.getElementById('btnBack');
+        var forwardBtn = document.getElementById('btnForward');
+        var searchInput = document.getElementById('globalSearchInput');
+
+        if (backBtn) backBtn.addEventListener('click', function () { window.history.back(); });
+        if (forwardBtn) forwardBtn.addEventListener('click', function () { window.history.forward(); });
+
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    var q = (searchInput.value || '').trim();
+                    var target = '/projects';
+                    if (q.length > 0) {
+                        var params = new URLSearchParams();
+                        params.set('q', q);
+                        target = target + '?' + params.toString();
+                    }
+                    window.location.href = target;
+                }
+            });
+        }
+    });
+
     function shutdownFlask() {
         if (confirm('Are you sure you want to shutdown the Flask application? This will stop the server.')) {
             // Show loading state
@@ -858,6 +900,43 @@
             });
         }
     }
+
+    // Theme toggle functionality
+    function toggleTheme() {
+        const body = document.body;
+        const themeIcon = document.getElementById('themeIcon');
+        
+        if (body.classList.contains('theme-light')) {
+            // Switch to dark theme
+            body.classList.remove('theme-light');
+            themeIcon.className = 'fas fa-moon';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            // Switch to light theme
+            body.classList.add('theme-light');
+            themeIcon.className = 'fas fa-sun';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme');
+        const body = document.body;
+        const themeIcon = document.getElementById('themeIcon');
+        
+        if (savedTheme === 'light') {
+            body.classList.add('theme-light');
+            if (themeIcon) {
+                themeIcon.className = 'fas fa-sun';
+            }
+        } else {
+            body.classList.remove('theme-light');
+            if (themeIcon) {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+    });
     </script>
 </body>
 </html>

@@ -45,7 +45,7 @@
                     You have access to sample research projects with DataLad integration. 
                     These projects demonstrate realistic research workflows and data management practices.
                     <br><small class="text-muted mt-1">
-                        Look for projects marked with a yellow "Demo" badge to explore sample research data.
+                        Look for projects marked with a "Demo" badge to explore sample research data.
                     </small>
                 </div>
             </div>
@@ -55,7 +55,8 @@
 
     <!-- Projects Grid -->
     <div class="row">
-        {% for project in projects %}
+        {% set query = request.args.get('q', '').lower() if request.args.get('q') else '' %}
+        {% for project in projects if (not query or query in project.name.lower() or (project.description and query in project.description.lower())) %}
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100">
                 <div class="card-body">
