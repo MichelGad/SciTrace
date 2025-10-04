@@ -55,12 +55,61 @@ A modern, production-ready web-based platform for managing research data workflo
 1. **Python**: Python 3.8 or higher
 2. **pip**: Python package installer (usually comes with Python)
 
-**Note**: The installation script will automatically install DataLad if it's not present on your system.
+### 🔧 DataLad Installation
 
-### ⚙️ Installation
+SciTrace requires DataLad for data management functionality. DataLad is a data management tool, so we recommend installing it wherever you'll be working with actual data. This may not be your laptop, but a server that you connect to with your laptop. In that case, please consider installing DataLad on that server. Installation on such systems does not require administrator privileges and works with regular user accounts.
+
+#### Step 1: DataLad needs Git
+
+Many systems have Git already installed. Try running `git --version` in a terminal to check.
+
+If you do not have Git installed, visit https://git-scm.com/downloads, pick your operating system, download, and run the Git installer.
+
+If you are using Conda, Brew, or a system with another package manager, there are simpler ways to install Git, and you likely know how.
+
+#### Step 2: Install UV
+
+UV is a smart little helper that is available for all platforms and offers the simplest way to install DataLad. DataLad is written in Python and UV takes care of automatically creating the right environment for DataLad to run, whether or not you know or have Python already.
+
+Visit https://docs.astral.sh/uv/getting-started/installation/#standalone-installer and run the standalone installer. Experts can also use any other method listed on that page.
+
+#### Step 3: Install git-annex
+
+With UV installed, you can now install the git-annex software, a core tool that DataLad builds upon. Run:
+
+```bash
+uv tool install git-annex
+```
+
+Afterwards run:
+
+```bash
+git annex version
+```
+
+to verify that you have a functional installation.
+
+#### Step 4: Install DataLad
+
+DataLad is installed exactly like git-annex. However, we also install a particular DataLad extension package, like so:
+
+```bash
+uv tool install datalad --with datalad-container --with-executables-from datalad-next
+git config --global --add datalad.extensions.load next
+```
+
+Verify the installation by running:
+
+```bash
+datalad wtf
+```
+
+(it should report all kinds of information on your system).
+
+### ⚙️ SciTrace Installation
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/MichelGad/SciTrace
+   git clone https://codeberg.org/MichelGad/SciTrace.git
    cd SciTrace
    ```
 
@@ -79,7 +128,6 @@ A modern, production-ready web-based platform for managing research data workflo
 
    The installation script will:
    - Check for Python 3.8+ and pip
-   - Install DataLad if not present
    - Create a virtual environment
    - Install all dependencies from `requirements.txt`
    - Initialize the database
